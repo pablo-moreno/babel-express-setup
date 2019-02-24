@@ -1,4 +1,3 @@
-import 'babel-register'
 import server from './server'
 import { config } from 'dotenv'
 

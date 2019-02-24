@@ -1,7 +1,4 @@
 import express from 'express'
-
-
-import jwt from 'jsonwebtoken'
 import cors from 'cors'
 import session from 'express-session'
 import bodyParser from 'body-parser'
@@ -29,8 +26,8 @@ else if (process.env.NODE_ENV === 'development') {
   server.use(cors())
 }
 
-routes.map(r => {
-  server[r.method.toLowerCase()](r.path, r.controller)
+routes.forEach(route => {
+  server[route.method.toLowerCase()](route.path, route.controller)
 })
 
 export default server
