@@ -1,16 +1,19 @@
 import sio from 'socket.io'
 const io = sio(6226)
 
-const myRooms = ['my-room-1', ]
+const fetchUserRooms = (user) => ['my-room-1', ]
 
 io.on('connection', function (socket) {
   console.log('Socket connected')
   socket.emit('new-user-connected')
 
   socket.on('ack-user-connected', function (user) {
-    myRooms.forEach(room => {
+    console.log('user-connected', user)
+    const rooms = fetchUserRooms(user)
+    rooms.forEach(room => {
       socket.join(room)
     })
+    socket.emit('user-rooms', rooms)
   })
 
   socket.on('post-message', function (room, message) {
