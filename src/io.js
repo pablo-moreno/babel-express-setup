@@ -1,6 +1,6 @@
 import sio from 'socket.io'
-const io = sio(6226)
 
+const io = sio(6226)
 const fetchUserRooms = (user) => ['my-room-1', ]
 
 io.on('connection', function (socket) {

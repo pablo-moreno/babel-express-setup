@@ -1,0 +1,25 @@
+version: '2'
+services:
+  server:
+    image: node:10.6.0
+    container_name: node_server
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: bash -c "npm i && npm run serve"
+    links:
+      - mongo
+      - redis
+    depends:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo
+    container_name: mongo_db
+    volumes:
+      - /var/mongo:/data/db
+
+  redis:
+    image: redis
+    
