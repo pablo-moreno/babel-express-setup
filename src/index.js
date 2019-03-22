@@ -1,4 +1,5 @@
 import server from './server'
+import './io'
 import { config } from 'dotenv'
 
 config()
