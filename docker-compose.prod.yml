@@ -6,24 +6,23 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-    command: bash -c "npm run dev"
+    command: bash -c "npm i && npm run serve"
     links:
       - mongo
       - redis
-    depends_on:
+    depends:
       - mongo
       - redis
     ports:
-      - 8888:8888
+      - 80:8888
       - 6226:6226
 
   mongo:
     image: mongo
     container_name: mongo_db
     volumes:
-      - /var/mongo/my_app_db:/data/db
-    ports:
-      - 4424:27017
+      - /var/mongo:/data/db
 
   redis:
     image: redis
+    
