@@ -5,6 +5,7 @@ export const createUser = async (req, res) => {
   let response = {}
   try {
     if (password !== password2) throw new Error('Password mismatch')
+
     const user = await User.createUser({ username, password, email, firstName, lastName })
     response = {
       username: user.username, 
@@ -30,6 +31,8 @@ export const login = async (req, res) => {
   try {
     const user = await User.authenticate(email, password)
     response = user
+    req.session.email = user.email
+    req.session.token = user.token 
   }
   catch (error) {
     response = {

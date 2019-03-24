@@ -5,6 +5,7 @@ import bodyParser from 'body-parser'
 import helmet from 'helmet'
 import compression from 'compression'
 import routes from './routes'
+import { SECRET_KEY } from './config'
 
 // Create server
 const server = express()
@@ -13,21 +14,23 @@ server.use(bodyParser.json())
 server.use(bodyParser.urlencoded({ extended: true }))
 server.use(compression())
 
+let sessionConf = {
+  secret: SECRET_KEY,
+  resave: false,
+  saveUninitialized: false
+}
+
 if (process.env.NODE_ENV === 'production') {
   server.use(helmet())
   server.set('trust proxy', 1)
-  server.use(session({
-      secret: process.env.SECRET_KEY,
-      resave: false,
-      saveUninitialized: false
-    })
-  )
+  sessionConf.secure = true
 }
 else if (process.env.NODE_ENV === 'development') {
   server.use(cors())
 }
 
-console.log('Routes: ')
+server.use(session(sessionConf))
+
 routes.forEach(route => {
   console.log('-', route.path)
   server[route.method.toLowerCase()](route.path, route.controller)
