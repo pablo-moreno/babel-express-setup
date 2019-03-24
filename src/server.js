@@ -33,8 +33,8 @@ else if (process.env.NODE_ENV === 'development') {
 server.use(session(sessionConf))
 
 routes.forEach(route => {
-  console.log('-', route.path)
-  server[route.method.toLowerCase()](route.path, route.protected ? none : authenticationRequired, route.controller)
+  console.log('-', route)
+  server[route.method.toLowerCase()](route.path, route.protected ? authenticationRequired : none, route.controller)
 })
 
 export default server
