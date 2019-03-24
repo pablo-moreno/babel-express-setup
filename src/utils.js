@@ -16,13 +16,6 @@ export const validatePassword = async (password, hashedPassword, verbose=false) 
   if (verbose) {
     console.log(`Password: ${password}\nHashed Password: ${hashedPassword}`)
   }
-  
-  return new Promise((resolve, reject) => {
-    compare(password, hashedPassword, (err, isValid) => {
-      if (isValid) 
-        resolve(true)
-      else
-        reject(false)
-    })
-  })
+
+  return await compare(password, hashedPassword)  
 }

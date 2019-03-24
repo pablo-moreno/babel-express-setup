@@ -1,10 +1,9 @@
 import jwt from 'jsonwebtoken'
-import mongoose, { Schema } from '../../mongoose'
+import mongoose from '../../mongoose'
 import { JWT_SECRET } from '../../config'
+import { hashPassword, validatePassword } from '../../utils'
 
-const Schema = mongoose.Schema
-
-const UserSchema = new Schema({
+const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     unique: true,
@@ -16,7 +15,6 @@ const UserSchema = new Schema({
     type: String,
     required: true,
     trim: true,
-    minlength: 1,
     unique: true,
   },
   firstName: {
@@ -32,90 +30,81 @@ const UserSchema = new Schema({
     required: true,
     trim: true
   },
-  tokens: [{
-    token: {
-      type: String,
-      required: true
-    }
-  }],
+  token: {
+    type: String,
+    required: false,
+    index: true
+  },
   creationDate: {
     type: Date,
     required: false,
     default: () => Date.now()
+  },
+  active: {
+    type: Boolean,
+    default: () => true
   }
 })
 
+UserSchema.path('email').validate(function (email) {
+  var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+  return emailRegex.test(email)
+}, 'The e-mail is not correct.')
+
 UserSchema.methods.generateAuthToken = async function () {
-  console.log('Generating auth token')
   let user = this
-  let token = jwt.sign({_id: user._id.toHexString(), email: user.email}, JWT_SECRET).toString()
-  user.tokens.push({ token })
+  let token = jwt.sign({ _id: user._id.toHexString(), email: user.email }, JWT_SECRET).toString()
+  user.token = token
   
-  return user.save().then((doc) => doc)
+  return await user.save()
 }
 
-UserSchema.methods.removeToken = function (token) {
-  let user = this
-  return user.update({
-    $pull: {
-      tokens: {token}
-    }
-  })
+UserSchema.methods.removeToken = async function (token) {
+  return await this.update({ token: '' })
 }
 
 UserSchema.statics.findByToken = async function (token) {
   let user = this
-  let decoded
+  let decoded = jwt.verify(token, JWT_SECRET)
 
-  try {
-    decoded = jwt.verify(token, JWT_SECRET)
-  } 
-  catch (error) {
-    return Promise.reject('Error verifying token')
-  }
-
-  return user.findOne({
+  return await user.findOne({
     '_id': decoded._id,
-    'tokens.token': token,
+    'token': token,
   })
 }
 
-UserSchema.statics.createUser = async function(username, password, password2, email, firstName='', lastName='') {
-  return new Promise((resolve, reject) => {
-    if (password !== password2) 
-      reject({ error: 'Password mismatch' })
-    
-    hash(password).then((hash) => {
-      let user = new User({ 
-        username,
-        email,
-        firstName,
-        lastName,
-        password: hash,
-        tokens: []
-      })
+UserSchema.statics.createUser = async function({ username, password, email, firstName = '', lastName = '' }) {
+  const hashedPassword = await hashPassword(password)
 
-      return user.save(doc => doc)
-        .then(result => resolve(result))
-        .catch(error => reject({ error: error.message })
-      )
-    })
+  let user = new User({ 
+    username,
+    email,
+    firstName,
+    lastName,
+    password: hashedPassword,
+    token: ''
   })
+  return await user.save()
 }
 
-UserSchema.statics.findByCredentials = async function (username, password) {
-  return new Promise((resolve, reject) => {
-    User.findOne({name: username}, (err, user) => {
-      if (! user || err) 
-        reject({ error: 'User not found' })
-      
-      validatePassword(password, user.password, true)
-        .then(isValid => user.generateAuthToken())
-        .then(result => resolve(user))
-        .catch(error => reject({ error: 'Wrong password' }))
-    })
-  })
+UserSchema.statics.authenticate = async function (email, password) {
+  const user = await User.findOne({ email })
+  const isValid = await validatePassword(password, user.password, true)
+  
+  if (isValid)
+    user.generateAuthToken()
+  else
+    throw new Error('Wrong username or password')
+
+  return {
+    username: user.username,
+    email: user.email,
+    token: user.token,
+    firstName: user.firstName,
+    lastName: user.lastName
+  }
 }
 
-export default mongoose.model('User', UserSchema)
+const User = mongoose.model('User', UserSchema)
 
+export default User

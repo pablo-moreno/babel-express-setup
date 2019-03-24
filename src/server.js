@@ -17,8 +17,9 @@ if (process.env.NODE_ENV === 'production') {
   server.use(helmet())
   server.set('trust proxy', 1)
   server.use(session({
-     secret : process.env.SECRET_KEY,
-     name : 'sessionId',
+      secret: process.env.SECRET_KEY,
+      resave: false,
+      saveUninitialized: false
     })
   )
 }
@@ -26,7 +27,9 @@ else if (process.env.NODE_ENV === 'development') {
   server.use(cors())
 }
 
+console.log('Routes: ')
 routes.forEach(route => {
+  console.log('-', route.path)
   server[route.method.toLowerCase()](route.path, route.controller)
 })
 
