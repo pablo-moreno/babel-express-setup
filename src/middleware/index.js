@@ -1,7 +1,8 @@
 export const none = (req, res, next) => next()
 
 export const authenticationRequired = (req, res, next) => {
-  if (req.isAuthenticated()) 
+  const { email, token } = req.session
+  if (email && token) 
     return next()
   else
     return {
