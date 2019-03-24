@@ -6,7 +6,7 @@ import helmet from 'helmet'
 import compression from 'compression'
 import routes from './routes'
 import { SECRET_KEY } from './config'
-import { none, authenticationRequired } from './middleware'
+import { none, authenticationRequired, checkPermission } from './middleware'
 
 // Create server
 const server = express()
@@ -33,8 +33,12 @@ else if (process.env.NODE_ENV === 'development') {
 server.use(session(sessionConf))
 
 routes.forEach(route => {
-  console.log('-', route)
-  server[route.method.toLowerCase()](route.path, route.protected ? authenticationRequired : none, route.controller)
+  server[route.method.toLowerCase()](
+    route.path, 
+    route.protected ? authenticationRequired : none,
+    checkPermission(route.authorization),
+    route.controller
+  )
 })
 
 export default server

@@ -22,9 +22,9 @@ export const authenticationRequired = async (req, res, next) => {
   }
 }
 
-const hasPermission = (permission) => {
+export const checkPermission = (permission) => {
   return async (req, res, next) => {
-    if (req.permissions.indexOf(permission) > -1) {
+    if (! permission || req.permissions.indexOf(permission) > -1) {
       next()
     }
     else {
