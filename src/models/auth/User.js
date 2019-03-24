@@ -63,6 +63,10 @@ UserSchema.methods.removeToken = async function (token) {
   return await this.update({ token: '' })
 }
 
+UserSchema.methods.getPermissions = async function () {
+  return []
+}
+
 UserSchema.statics.findByToken = async function (token) {
   let user = this
   let decoded = jwt.verify(token, JWT_SECRET)

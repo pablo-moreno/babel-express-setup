@@ -11,6 +11,7 @@ export const authenticationRequired = async (req, res, next) => {
       throw new Error('Invalid authentication credentials')
     }
     req.user = _.pick(user, 'username', 'email', 'token', 'firstName', 'lastName'),
+    req.permissions = user.getPermissions()
     next()
   }
   catch (error) {
@@ -22,5 +23,15 @@ export const authenticationRequired = async (req, res, next) => {
 }
 
 const hasPermission = (permission) => {
-  
+  return async (req, res, next) => {
+    if (req.permissions.indexOf(permission) > -1) {
+      next()
+    }
+    else {
+      res.status(403).send({
+        status: 403,
+        error: 'Forbidden'
+      })
+    }
+  }
 }
