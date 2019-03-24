@@ -1,4 +1,4 @@
-import { createUser, login } from './controllers/auth'
+import { createUser, login, getMe } from './controllers/auth'
 
 export default [
   {
@@ -11,4 +11,10 @@ export default [
     controller: createUser,
     method: 'POST',
   },
+  {
+    path: '/auth/me',
+    controller: getMe,
+    method: 'GET',
+    protected: true
+  }
 ]

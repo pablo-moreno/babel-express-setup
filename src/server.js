@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import compression from 'compression'
 import routes from './routes'
 import { SECRET_KEY } from './config'
+import { none, authenticationRequired } from './middleware'
 
 // Create server
 const server = express()
@@ -33,7 +34,7 @@ server.use(session(sessionConf))
 
 routes.forEach(route => {
   console.log('-', route.path)
-  server[route.method.toLowerCase()](route.path, route.controller)
+  server[route.method.toLowerCase()](route.path, route.protected ? none : authenticationRequired, route.controller)
 })
 
 export default server

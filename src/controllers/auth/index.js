@@ -42,3 +42,7 @@ export const login = async (req, res) => {
   }
   res.send(response)
 }
+
+export const getMe = (req, res) => {
+  res.send(req.user)
+}
