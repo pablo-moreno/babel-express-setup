@@ -1,8 +1,7 @@
 language: node_js
 node_js:
   - "10.6.0"
-before_install:
-  - npm i
+
 env:
   - HOST=0.0.0.0
   - PORT=8888
@@ -14,4 +13,6 @@ env:
 services:
   - mongodb
 
+before_script:
+  - npm i
 script: npm run test
