@@ -9,7 +9,7 @@ node_js:
 #   - SALT=10
 #   - JWT_SECRET=thisisyourjwtsecret
 #   - SECRET_KEY=thisisthesessionsecretkey
-  - NODE_ENV=development
+#   - NODE_ENV=development
 services:
   - mongodb
 
