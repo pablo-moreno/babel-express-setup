@@ -1,4 +1,4 @@
-import Room from '../../models/rooms/Room'
+import { Room } from '../../models/rooms'
 
 export const createRoom = async (req, res) => {
   const { name, users, admin, group } = req.body

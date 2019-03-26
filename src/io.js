@@ -1,7 +1,11 @@
 import sio from 'socket.io'
+import { Room } from './models/rooms'
 
 const io = sio(6226)
-const fetchUserRooms = (user) => [{ _id: 'my-room-1' }, ]
+const fetchUserRooms = async (user) => {
+  const { _id } = user
+  return Room.find({ users: _id })
+}
 
 io.on('connection', function (socket) {
   console.log('Socket connected')

@@ -1,4 +1,4 @@
-import User from '../models/auth/User'
+import { User } from '../models/auth'
 import _ from 'lodash'
 
 export const none = (req, res, next) => next()

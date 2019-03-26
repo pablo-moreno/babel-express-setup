@@ -93,15 +93,12 @@ UserSchema.statics.createUser = async function({ username, password, email, firs
 
 UserSchema.statics.authenticate = async function (email, password) {
   const user = await User.findOne({ email })
-  if (! user)
-    throw new Error('User not found')
+  if (! user) throw new Error('User not found')
   
-  const isValid = await validatePassword(password, user.password, true)
-  
-  if (isValid)
-    user.generateAuthToken()
-  else
-    throw new Error('Wrong username or password')
+  const isValid = await validatePassword(password, user.password)
+
+  if (!isValid) throw new Error('Wrong username or password')
+  if (user.token === '')  user.generateAuthToken()  
 
   return {
     id: user._id,

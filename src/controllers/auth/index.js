@@ -1,4 +1,4 @@
-import User from '../../models/auth/User'
+import { User } from '../../models/auth'
 
 export const createUser = async (req, res) => {
   const { username, password, password2, email, firstName, lastName } = req.body
@@ -15,14 +15,14 @@ export const createUser = async (req, res) => {
       lastName: user.lastName, 
       token: user.token
     }
-  } 
+  }
   catch (error) {
     response = {
       status: 400,
       error: error.message
     }
   }
-
+  
   res.send(response)
 }
 
