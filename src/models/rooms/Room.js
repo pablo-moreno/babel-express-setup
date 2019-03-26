@@ -9,11 +9,9 @@ const RoomSchema = new mongoose.Schema({
     trim: true
   },
   users: [{
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
-    }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }],
   creationDate: {
     type: Date,

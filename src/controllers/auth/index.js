@@ -33,7 +33,7 @@ export const login = async (req, res) => {
     const user = await User.authenticate(email, password)
     response = user
     req.session.email = user.email
-    req.session.token = user.token 
+    req.session.token = user.token
   }
   catch (error) {
     response = {
