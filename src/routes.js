@@ -23,6 +23,7 @@ export default [
     protected: true,
     authorization: undefined
   },
+  
   // Rooms
   {
     path: '/rooms/new',
