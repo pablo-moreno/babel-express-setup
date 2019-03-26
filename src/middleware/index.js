@@ -5,12 +5,13 @@ export const none = (req, res, next) => next()
 
 export const authenticationRequired = async (req, res, next) => {
   let token = req.header('x-auth') || req.session.token
+  
   try {
     const user = await User.findByToken(token)
     if (! user) {
       throw new Error('Invalid authentication credentials')
     }
-    req.user = _.pick(user, 'username', 'email', 'token', 'firstName', 'lastName'),
+    req.user = _.pick(user, '_id', 'username', 'email', 'token', 'firstName', 'lastName'),
     req.permissions = user.getPermissions()
     next()
   }
@@ -34,4 +35,9 @@ export const checkPermission = (permission) => {
       })
     }
   }
+}
+
+export const logger = (req, res, next) => {
+  console.log(`[${req.method}] - ${req.route.path}`)
+  next()
 }

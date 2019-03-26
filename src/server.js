@@ -5,8 +5,8 @@ import bodyParser from 'body-parser'
 import helmet from 'helmet'
 import compression from 'compression'
 import routes from './routes'
-import { SECRET_KEY } from './config'
-import { none, authenticationRequired, checkPermission } from './middleware'
+import { DEBUG, SECRET_KEY } from './config'
+import { none, authenticationRequired, checkPermission, logger } from './middleware'
 
 // Create server
 const server = express()
@@ -21,20 +21,22 @@ let sessionConf = {
   saveUninitialized: false
 }
 
-if (process.env.NODE_ENV === 'production') {
+if (DEBUG) {
+  server.use(cors())
+}
+else {
   server.use(helmet())
   server.set('trust proxy', 1)
   sessionConf.secure = true
-}
-else if (process.env.NODE_ENV === 'development') {
-  server.use(cors())
 }
 
 server.use(session(sessionConf))
 
 routes.forEach(route => {
+  console.log('-', route.path)
   server[route.method.toLowerCase()](
     route.path, 
+    logger,
     route.protected ? authenticationRequired : none,
     checkPermission(route.authorization),
     route.controller

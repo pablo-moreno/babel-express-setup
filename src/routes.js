@@ -1,4 +1,7 @@
 import { createUser, login, getMe } from './controllers/auth'
+import { createRoom } from './controllers/rooms'
+
+const validator = route => ['GET', 'POST', 'PUT', 'DELETE'].indexOf(route.method) > -1
 
 export default [
   {
@@ -17,6 +20,13 @@ export default [
     path: '/auth/me',
     controller: getMe,
     method: 'GET',
+    protected: true,
+    authorization: undefined
+  },
+  {
+    path: '/rooms/new',
+    controller: createRoom,
+    method: 'POST',
     protected: true,
     authorization: undefined
   }

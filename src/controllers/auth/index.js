@@ -8,6 +8,7 @@ export const createUser = async (req, res) => {
 
     const user = await User.createUser({ username, password, email, firstName, lastName })
     response = {
+      id: user._id,
       username: user.username, 
       email: user.email, 
       firstName: user.firstName, 

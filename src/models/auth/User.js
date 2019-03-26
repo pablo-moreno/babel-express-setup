@@ -46,21 +46,21 @@ const UserSchema = new mongoose.Schema({
   }
 })
 
-UserSchema.path('email').validate(function (email) {
-  var emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-  return emailRegex.test(email)
-}, 'The e-mail is not correct.')
+UserSchema.path('email').validate(
+  email => /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/.test(email), 
+  'The e-mail is not correct.'
+)
 
 UserSchema.methods.generateAuthToken = async function () {
   let user = this
   let token = jwt.sign({ _id: user._id.toHexString(), email: user.email }, JWT_SECRET).toString()
   user.token = token
   
-  return await user.save()
+  return user.save()
 }
 
 UserSchema.methods.removeToken = async function (token) {
-  return await this.update({ token: '' })
+  return this.update({ token: '' })
 }
 
 UserSchema.methods.getPermissions = async function () {
@@ -71,7 +71,7 @@ UserSchema.statics.findByToken = async function (token) {
   let user = this
   let decoded = jwt.verify(token, JWT_SECRET)
 
-  return await user.findOne({
+  return user.findOne({
     '_id': decoded._id,
     'token': token,
   })
@@ -88,11 +88,14 @@ UserSchema.statics.createUser = async function({ username, password, email, firs
     password: hashedPassword,
     token: ''
   })
-  return await user.save()
+  return user.save()
 }
 
 UserSchema.statics.authenticate = async function (email, password) {
   const user = await User.findOne({ email })
+  if (! user)
+    throw new Error('User not found')
+  
   const isValid = await validatePassword(password, user.password, true)
   
   if (isValid)
@@ -101,6 +104,7 @@ UserSchema.statics.authenticate = async function (email, password) {
     throw new Error('Wrong username or password')
 
   return {
+    id: user._id,
     username: user.username,
     email: user.email,
     token: user.token,
