@@ -23,15 +23,29 @@ export const authenticationRequired = async (req, res, next) => {
   }
 }
 
-export const checkPermission = (permission) => {
+export const checkPermissions = (permissions) => {
   return async (req, res, next) => {
-    if (! permission || req.permissions.indexOf(permission) > -1) {
+    const { user, params } = req
+    if (permissions.length === 0) {
       next()
-    }
-    else {
-      res.status(403).send({
+    } else {
+      const results = []
+      permissions.forEach(async permission => {
+        try {
+          const result = await permission(user, params)
+          console.log('result', result)
+          results.push(result)
+        } catch (error) {
+          results.push(false)
+        }
+      })
+
+      console.log('results', results)
+
+      const ok = results && results.length === results.filter(i => i).length
+      ok ? next() : res.send({
         status: 403,
-        error: 'Forbidden: You have no permission to access this url'
+        error: 'Forbidden: you dont have permission to access this url'
       })
     }
   }

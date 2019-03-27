@@ -2,4 +2,26 @@ import { hash, compare } from 'bcryptjs'
 import { SALT } from './config'
 
 export const hashPassword = async password => hash(password, SALT)
+
 export const validatePassword = async (password, hashedPassword) => compare(password, hashedPassword)
+
+export const clean = obj => {
+  const nObj = {}
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] !== undefined && obj[key] !== null && obj[key] !== '') {
+      nObj[key] = obj[key]
+    }
+  })
+  return nObj
+}
+
+export const rw = fn => {
+  return async (req, res) => {
+    fn(req, res).catch (error => {
+      res.status(400).send({
+        status: 400,
+        error: error.message
+      })
+    })
+  }
+}
