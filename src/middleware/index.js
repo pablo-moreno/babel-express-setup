@@ -30,21 +30,19 @@ export const checkPermissions = (permissions) => {
       next()
     } else {
       const results = []
-      permissions.forEach(async permission => {
-        try {
-          const result = await permission(user, params)
-          console.log('result', result)
-          results.push(result)
-        } catch (error) {
-          results.push(false)
-        }
-      })
-
-      const ok = results && results.length === results.filter(i => i).length
-      ok ? next() : res.send({
-        status: 403,
-        error: 'Forbidden: you dont have permission to access this url'
-      })
+      for (let permission of permissions) {
+        const result = await permission(user, params)
+        results.push(result)
+      }
+      const hasPermission = results && results.length === results.filter(i => i).length
+      if (hasPermission) {
+        next()
+      } else {
+        res.send({
+          status: 403,
+          error: 'Forbidden: You don\'t have permission to perform this action.'
+        })
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 import { Room } from '../../models/rooms'
+import { clean } from '../../utils'
 
 export const createRoom = async (req, res) => {
   const { name, users, admin, group } = req.body
@@ -10,29 +11,31 @@ export const createRoom = async (req, res) => {
 
 export const getRooms = async (req, res) => {
   const { _id } = req.user
-  const rooms = await Room.find({ users: _id })
-    .populate({ path: 'users', select: 'username email'})
+  const pop = { path: 'users', select: 'username email' }
+  const rooms = await Room.find({ users: _id }).populate(pop)
   res.send(rooms)
 }
 
 export const getRoom = async (req, res) => {
   const { id } = req.params
-  const room = await Room.findOne({ _id: id })
-    .populate({ path: 'users', select: 'username email'})
+  const pop = { path: 'users', select: 'username email' }
+  const room = await Room.findOne({ _id: id }).populate(pop)
+
   res.send(room)
 }
 
 export const deleteRoom = async (req, res) => {
   const { id } = req.params
   const result = await Room.deleteOne({ _id: id })
-  res.send(result)
+  res.send({result})
 }
 
 export const updateRoom = async (req, res) => {
   const { id } = req.params
-  const { room } = req.body
+  const { users, name, admin } = req.body
+
   const result = await Room.updateOne({ _id: id }, {
-    $set: room
+    $set: clean({ users, name, admin})
   })
   res.send(result)
 }
