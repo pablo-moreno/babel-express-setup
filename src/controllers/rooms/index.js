@@ -11,7 +11,15 @@ export const createRoom = async (req, res) => {
 export const getRooms = async (req, res) => {
   const { _id } = req.user
   const rooms = await Room.find({ users: _id })
+    .populate({ path: 'users', select: 'username email'})
   res.send(rooms)
+}
+
+export const getRoom = async (req, res) => {
+  const { id } = req.params
+  const room = await Room.findOne({ _id: id })
+    .populate({ path: 'users', select: 'username email'})
+  res.send(room)
 }
 
 export const deleteRoom = async (req, res) => {

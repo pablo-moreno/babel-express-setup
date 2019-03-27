@@ -40,8 +40,6 @@ export const checkPermissions = (permissions) => {
         }
       })
 
-      console.log('results', results)
-
       const ok = results && results.length === results.filter(i => i).length
       ok ? next() : res.send({
         status: 403,

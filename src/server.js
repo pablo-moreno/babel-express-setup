@@ -7,7 +7,7 @@ import compression from 'compression'
 import routes from './routes'
 import { DEBUG, SECRET_KEY } from './config'
 import { none, authenticationRequired, checkPermissions, logger } from './middleware'
-import { rw } from './utils'
+import { errorWrapper } from './utils'
 
 // Create server
 const server = express()
@@ -40,7 +40,7 @@ routes.forEach(route => {
     logger,
     route.protected ? authenticationRequired : none,
     checkPermissions(route.permissions),
-    rw(route.controller),
+    errorWrapper(route.controller),
   )
 })
 

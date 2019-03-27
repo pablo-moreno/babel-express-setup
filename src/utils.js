@@ -15,7 +15,7 @@ export const clean = obj => {
   return nObj
 }
 
-export const rw = fn => {
+export const errorWrapper = fn => {
   return async (req, res) => {
     fn(req, res).catch (error => {
       res.status(400).send({

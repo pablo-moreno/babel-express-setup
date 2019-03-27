@@ -1,6 +1,6 @@
 import { createUser, login, getMe, updateUser } from './controllers/auth'
-import { createRoom, getRooms, deleteRoom, updateRoom } from './controllers/rooms'
-import { canDeleteRoom, canUpdateRoom } from './permissions/rooms'
+import { createRoom, getRooms, deleteRoom, updateRoom, getRoom } from './controllers/rooms'
+import { canDeleteRoom, canUpdateRoom, canSeeRoom } from './permissions/rooms'
 
 const validator = route => ['GET', 'POST', 'PUT', 'DELETE'].indexOf(route.method) > -1
 
@@ -34,7 +34,7 @@ export default [
   
   // Rooms
   {
-    path: '/rooms/new',
+    path: '/rooms',
     controller: createRoom,
     method: 'POST',
     protected: true,
@@ -49,6 +49,24 @@ export default [
   },
   {
     path: '/rooms/:id',
+    controller: getRoom,
+    method: 'GET',
+    protected: true,
+    permissions: [
+      canSeeRoom
+    ],
+  },
+  {
+    path: '/rooms/:id',
+    controller: updateRoom,
+    method: 'PUT',
+    protected: true,
+    permissions: [
+      canUpdateRoom
+    ],
+  },
+  {
+    path: '/rooms/:id',
     controller: deleteRoom,
     method: 'DELETE',
     protected: true,
@@ -56,13 +74,4 @@ export default [
       canDeleteRoom
     ],
   },
-  {
-    path: '/rooms/:id',
-    controller: updateRoom,
-    method: 'DELETE',
-    protected: true,
-    permissions: [
-      canUpdateRoom
-    ],
-  }
 ]
