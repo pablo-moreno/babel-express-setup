@@ -45,13 +45,13 @@ const MessageSchema = new mongoose.Schema({
   }],
 })
 
-Message.methods.markAsRead = function (user) {
+MessageSchema.methods.markAsRead = function (user) {
   const message = this
   message.read.push(user._id)
   message.save()
 }
 
-Message.methods.markAsReceived = function (user) {
+MessageSchema.methods.markAsReceived = function (user) {
   const message = this
   message.received.push(user._id)
   message.save()

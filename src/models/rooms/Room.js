@@ -27,6 +27,14 @@ const RoomSchema = new mongoose.Schema({
   }
 })
 
+RoomSchema.statics.findByUser = function (user) {
+  let room = this
+  return this.find({ users: user._id }).populate({
+    path: 'users', 
+    select: 'username email'
+  })
+}
+
 const Room = mongoose.model('Room', RoomSchema)
 
 export default Room
