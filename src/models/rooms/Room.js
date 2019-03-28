@@ -28,8 +28,7 @@ const RoomSchema = new mongoose.Schema({
 })
 
 RoomSchema.statics.findByUser = function (user) {
-  let room = this
-  return this.find({ users: user._id }).populate({
+  return this.find({ users: user.id }).populate({
     path: 'users', 
     select: 'username email'
   })
