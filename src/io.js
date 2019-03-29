@@ -29,7 +29,10 @@ io.sockets.on('connection', function (socket) {
     console.log('post-message', { text, user, room })
     const msg = new Message({ text, user: user.id, room: room._id })
     const result = await msg.save()
-    io.sockets.in(room._id).emit('new-message', result)
+    io.sockets.in(room._id).emit('new-message', { text, user: {
+      id: user.id,
+      username: user.username
+    }})
   })
 })
 
