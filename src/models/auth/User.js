@@ -43,7 +43,17 @@ const UserSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: () => true
-  }
+  },
+  friends: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  }],
+  incomingFriendshipRequests: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'FriendshipRequet',
+    required: true
+  }]
 })
 
 UserSchema.path('email').validate(

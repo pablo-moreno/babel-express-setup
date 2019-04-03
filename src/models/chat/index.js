@@ -1,3 +1,4 @@
-import _Message from './Message'
+import Message from './Message'
+import FriendshipRequest from './FriendshipRequest'
 
-export const Message = _Message
+export { Message, FriendshipRequest }

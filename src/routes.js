@@ -1,6 +1,7 @@
 import { createUser, login, getMe, updateUser } from './controllers/auth'
 import { createRoom, getRooms, deleteRoom, updateRoom, getRoom } from './controllers/rooms'
 import { canDeleteRoom, canUpdateRoom, canSeeRoom } from './permissions/rooms'
+import { createFriendshipRequest } from './controllers/chat'
 
 const validator = route => ['GET', 'POST', 'PUT', 'DELETE'].indexOf(route.method) > -1
 
@@ -74,4 +75,25 @@ export default [
       canDeleteRoom
     ],
   },
+  {
+    path: '/friendships/new',
+    controller: createFriendshipRequest,
+    method: 'POST',
+    protected: true,
+    permissions: []
+  },
+  {
+    path: '/friendships/:id/accept',
+    controller: acceptFriendshipRequest,
+    method: 'POST',
+    protected: true,
+    permissions: []
+  },
+  {
+    path: '/friendships/:id/refuse',
+    controller: refuseFriendshipRequest,
+    method: 'POST',
+    protected: true,
+    permissions: []
+  }
 ]
