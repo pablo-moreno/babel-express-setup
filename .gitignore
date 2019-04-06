@@ -88,4 +88,7 @@ typings/
 # Dist
 dist/
 
+# Media files
+media/
+
 # End of https://www.gitignore.io/api/node

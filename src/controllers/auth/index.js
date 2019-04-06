@@ -77,3 +77,8 @@ export const addUserGroup = async (req, res) => {
   const result = await mUser.save()
   res.send(result)
 }
+
+export const uploadAvatar = async (req, res) => {
+  const { user, file } = req
+  return res.send({ result: file.filename })
+}

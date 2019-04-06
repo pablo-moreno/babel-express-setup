@@ -1,7 +1,8 @@
-import { createUser, login, getMe, updateUser, createGroup, searchUsers } from './controllers/auth'
+import { createUser, login, getMe, updateUser, createGroup, searchUsers, uploadAvatar } from './controllers/auth'
 import { createRoom, getRooms, deleteRoom, updateRoom, getRoom } from './controllers/rooms'
 import { canDeleteRoom, canUpdateRoom, canSeeRoom } from './permissions/rooms'
 import { createFriendshipRequest, acceptFriendshipRequest, refuseFriendshipRequest } from './controllers/chat'
+import { single } from 'multer'
 
 const validator = route => ['GET', 'POST', 'PUT', 'DELETE'].indexOf(route.method) > -1
 
@@ -11,12 +12,14 @@ export default [
     controller: login,
     method: 'POST',
     permissions: [],
+    middleware: []
   },
   {
     path: '/auth/sign-up',
     controller: createUser,
     method: 'POST',
     permissions: [],
+    middleware: [],
   },
   {
     path: '/auth/me',
@@ -24,6 +27,7 @@ export default [
     method: 'GET',
     protected: true,
     permissions: [],
+    middleware: [],
   },
   {
     path: '/auth/me',
@@ -33,11 +37,20 @@ export default [
     permissions: [],
   },
   {
+    path: '/auth/me/avatar',
+    controller: uploadAvatar,
+    method: 'POST',
+    protected: true,
+    permissions: [],
+    upload: 'avatar',
+  },
+  {
     path: '/auth/groups/new',
     controller: createGroup,
     method: 'POST',
     protected: true,
-    permissions: []
+    permissions: [],
+    middleware: [],
   },
   
   // Rooms
@@ -47,6 +60,7 @@ export default [
     method: 'POST',
     protected: true,
     permissions: [],
+    middleware: [],
   },
   {
     path: '/rooms',
@@ -54,6 +68,7 @@ export default [
     method: 'GET',
     protected: true,
     permissions: [],
+    middleware: [],
   },
   {
     path: '/rooms/:id',
@@ -63,6 +78,7 @@ export default [
     permissions: [
       canSeeRoom
     ],
+    middleware: [],
   },
   {
     path: '/rooms/:id',
@@ -72,6 +88,7 @@ export default [
     permissions: [
       canUpdateRoom
     ],
+    middleware: [],
   },
   {
     path: '/rooms/:id',
@@ -81,27 +98,31 @@ export default [
     permissions: [
       canDeleteRoom
     ],
+    middleware: [],
   },
   {
     path: '/friendships/new',
     controller: createFriendshipRequest,
     method: 'POST',
     protected: true,
-    permissions: []
+    permissions: [],
+    middleware: [],
   },
   {
     path: '/friendships/:id/accept',
     controller: acceptFriendshipRequest,
     method: 'POST',
     protected: true,
-    permissions: []
+    permissions: [],
+    middleware: [],
   },
   {
     path: '/friendships/:id/refuse',
     controller: refuseFriendshipRequest,
     method: 'POST',
     protected: true,
-    permissions: []
+    permissions: [],
+    middleware: [],
   },
 
   // Users
@@ -110,6 +131,7 @@ export default [
     controller: searchUsers,
     method: 'GET',
     protected: true,
-    permissions: []
+    permissions: [],
+    middleware: [],
   }
 ]
