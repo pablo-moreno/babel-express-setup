@@ -17,6 +17,8 @@ server.use(bodyParser.json())
 server.use(bodyParser.urlencoded({ extended: true }))
 server.use(compression())
 
+server.use(express.static('media'))
+
 let sessionConf = {
   secret: SECRET_KEY,
   resave: false,
@@ -53,6 +55,7 @@ routes.forEach(route => {
     route.protected ? authenticationRequired : undefined, 
     checkPermissions(route.permissions),
     route.upload ? upload.single(route.upload) : undefined,
+    ...(route.middleware ? route.middleware : [])
   ].filter(m => m !== undefined)
 
   server[route.method.toLowerCase()](

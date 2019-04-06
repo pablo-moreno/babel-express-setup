@@ -2,6 +2,7 @@ import { User } from '../../models/auth'
 import { clean, requestWrapper as rw } from '../../utils'
 import Permission from '../../models/auth/Permission'
 import Group from '../../models/auth/Group'
+import { UPLOADS_URL } from '../../config'
 
 export const createUser = async (req, res) => {
   const { username, password, password2, email, firstName, lastName } = req.body
@@ -80,5 +81,9 @@ export const addUserGroup = async (req, res) => {
 
 export const uploadAvatar = async (req, res) => {
   const { user, file } = req
-  return res.send({ result: file.filename })
+  const mUser = await User.findOne({ _id: user._id })
+  const path = `${UPLOADS_URL}/${file.filename}`
+  mUser.avatar = path
+  const results = await mUser.save()
+  return res.send(results)
 }

@@ -43,6 +43,7 @@ export default [
     protected: true,
     permissions: [],
     upload: 'avatar',
+    middleware: []
   },
   {
     path: '/auth/groups/new',
