@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken'
 import mongoose from '../../mongoose'
-import { JWT_SECRET } from '../../config'
+import { JWT_SECRET, EXPIRATION_DAYS } from '../../config'
 import { hashPassword, validatePassword } from '../../utils'
+import Group from './Group'
+import Permission from './Permission'
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -44,6 +46,14 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: () => true
   },
+  verified: {
+    type: Boolean,
+    default: false
+  },
+  verificationToken: {
+    type: String,
+    required: false
+  },
   friends: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -53,7 +63,26 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'FriendshipRequet',
     required: true
-  }]
+  }],
+  groups: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Group',
+    required: true
+  }],
+  avatar: {
+    type: String,
+    required: false,
+  },
+  statuses: [{
+    text: {
+      type: String,
+      required: true
+    },
+    publishedDate: {
+      type: Date,
+      default: () => Date.now()
+    }
+  }],
 })
 
 UserSchema.path('email').validate(
@@ -63,7 +92,10 @@ UserSchema.path('email').validate(
 
 UserSchema.methods.generateAuthToken = async function () {
   let user = this
-  let token = jwt.sign({ _id: user._id.toHexString(), email: user.email }, JWT_SECRET).toString()
+  let token = jwt.sign({ 
+    _id: user._id.toHexString(), 
+    email: user.email
+  }, JWT_SECRET).toString()
   user.token = token
   
   return user.save()
@@ -77,6 +109,45 @@ UserSchema.methods.getPermissions = async function () {
   return []
 }
 
+UserSchema.methods.hasPermission = async function (permission) {
+  const groups = await Group.find({ _id: { $in: this.groups } })
+  const perm = await Permission.find({ name: permission })
+  const permissions = []
+  groups.forEach(group => {
+    group.permissions.forEach(permission => {
+      permissions.push(permission)
+    })
+  })
+  return permissions.indexOf(perm._id) > -1
+}
+
+UserSchema.methods.postStatus = async function (status) {
+  this.statuses.push({ text: status })
+  return this.save()
+}
+
+UserSchema.methods.verify = (verificationToken) => {
+  const { _id, expirationDate } = jwt.verify(verificationToken, JWT_SECRET)
+  const expired = Date.now().valueOf() > expirationDate
+  if (! expired && this._id === _id) {
+    this.verified = true
+    this.save()
+    return true
+  }
+  return false
+}
+
+UserSchema.methods.createVerificationToken = () => {
+  const expirationDate = new Date()
+  expirationDate.setDate(date.getDate() + EXPIRATION_DAYS)
+
+  const token = jwt.sign({ 
+    _id: this._id.toHexString(), 
+    expirationDate
+  }, JWT_SECRET).toString()
+  this.verificationToken = token
+}
+
 UserSchema.statics.findByToken = async function (token) {
   let user = this
   let decoded = jwt.verify(token, JWT_SECRET)
@@ -85,6 +156,10 @@ UserSchema.statics.findByToken = async function (token) {
     '_id': decoded._id,
     'token': token,
   })
+}
+
+UserSchema.statics.findByUsername = async function (username) {
+  return this.find({ username: { $regex: `${username}.*` } })
 }
 
 UserSchema.statics.createUser = async function({ username, password, email, firstName = '', lastName = '' }) {
@@ -108,7 +183,7 @@ UserSchema.statics.authenticate = async function (email, password) {
   const isValid = await validatePassword(password, user.password)
 
   if (!isValid) throw new Error('Wrong username or password')
-  if (user.token === '')  user.generateAuthToken()  
+  if (user.token === '') user.generateAuthToken()  
 
   return {
     id: user._id,

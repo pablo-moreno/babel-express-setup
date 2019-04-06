@@ -15,6 +15,17 @@ const FriendshipRequestSchema = new mongoose.Schema({
     type: Date,
     default: () => Date.now()
   },
+  // -1 rejected, 0 sent, 1 accepted
+  status: {
+    type: Number,
+    default: 0,
+    validator: (value) => [-1, 0, 1].indexOf(value) > -1
+  },
+  text: {
+    type: String,
+    default: '',
+    required: false
+  }
 })
 
 const FriendshipRequest = mongoose.model('FriendshipRequest', FriendshipRequestSchema)

@@ -1,7 +1,7 @@
-import { createUser, login, getMe, updateUser } from './controllers/auth'
+import { createUser, login, getMe, updateUser, createGroup, searchUsers } from './controllers/auth'
 import { createRoom, getRooms, deleteRoom, updateRoom, getRoom } from './controllers/rooms'
 import { canDeleteRoom, canUpdateRoom, canSeeRoom } from './permissions/rooms'
-import { createFriendshipRequest } from './controllers/chat'
+import { createFriendshipRequest, acceptFriendshipRequest, refuseFriendshipRequest } from './controllers/chat'
 
 const validator = route => ['GET', 'POST', 'PUT', 'DELETE'].indexOf(route.method) > -1
 
@@ -31,6 +31,13 @@ export default [
     method: 'PUT',
     protected: true,
     permissions: [],
+  },
+  {
+    path: '/auth/groups/new',
+    controller: createGroup,
+    method: 'POST',
+    protected: true,
+    permissions: []
   },
   
   // Rooms
@@ -93,6 +100,15 @@ export default [
     path: '/friendships/:id/refuse',
     controller: refuseFriendshipRequest,
     method: 'POST',
+    protected: true,
+    permissions: []
+  },
+
+  // Users
+  {
+    path: '/users',
+    controller: searchUsers,
+    method: 'GET',
     protected: true,
     permissions: []
   }

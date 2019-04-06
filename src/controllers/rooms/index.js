@@ -35,7 +35,7 @@ export const updateRoom = async (req, res) => {
   const { users, name, admin } = req.body
 
   const result = await Room.updateOne({ _id: id }, {
-    $set: clean({ users, name, admin})
+    $set: clean({ users, name, admin })
   })
   res.send(result)
 }

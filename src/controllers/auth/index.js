@@ -1,5 +1,7 @@
 import { User } from '../../models/auth'
 import { clean, requestWrapper as rw } from '../../utils'
+import Permission from '../../models/auth/Permission'
+import Group from '../../models/auth/Group'
 
 export const createUser = async (req, res) => {
   const { username, password, password2, email, firstName, lastName } = req.body
@@ -40,5 +42,38 @@ export const updateUser = async (req, res) => {
   const result = await User.updateOne({ _id }, { 
     $set: updates
   })
+  res.send(result)
+}
+
+export const searchUsers = async (req, res) => {
+  const { username } = req.query
+  const results = await User.findByUsername(username)
+  res.send(results.map(user => ({
+      _id: user._id,
+      username: user.username,
+    })
+  ))
+}
+
+export const createPermission = async (req, res) => {
+  const { name } = req.body
+  const permission = new Permission({ name })
+  const result = await permission.save()
+  res.send(result)
+}
+
+export const createGroup = async (req, res) => {
+  const { name, permissions } = req.body
+  const group = new Group({ name, permissions })
+  const result = await group.save()
+  res.send(result)
+}
+
+export const addUserGroup = async (req, res) => {
+  const { user, group } = req.body
+  const mUser = await User.findOne({ _id: user })
+  const mGroup = await Group.findOne({ _id: group })
+  mUser.groups.push(mGroup)
+  const result = await mUser.save()
   res.send(result)
 }
