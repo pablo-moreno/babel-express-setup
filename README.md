@@ -1,6 +1,6 @@
 # Poppy
 
-[![Build Status](https://travis-ci.org/pablo-moreno/babel-express-setup.svg?branch=master)](https://travis-ci.org/pablo-moreno/babel-express-setup)
+[![Build Status](https://travis-ci.com/pablo-moreno/poppy.svg?branch=master)](https://travis-ci.com/pablo-moreno/poppy)
 
 Install dependencies:
 
