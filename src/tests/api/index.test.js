@@ -4,6 +4,8 @@ import mongoose from '../../mongoose'
 import { createMocks, destroyMocks } from './mocks'
 
 describe('API calls', () => {
+  let chewie = undefined
+
   beforeAll(async () => {
     const users = await createMocks()
     console.log('Users created:', users)
@@ -46,5 +48,40 @@ describe('API calls', () => {
     expect(user.username).toBe('chewie')
     expect(user.email).toBe('chewie@mail.com')
     expect(user.token).not.toBe(undefined)
+    chewie = user
+  })
+
+  test('Get Me', async () => {
+    const response = await request(server)
+      .get('/auth/me')
+      .set('x-auth', chewie.token)
+    
+    const user = response.body
+
+    expect(user.username).toBe(chewie.username)
+    expect(user.email).toBe(chewie.email)
+    expect(user.token).toBe(chewie.token)
+    chewie = user
+  })
+
+  test('Update user', async () => {
+    const response = await request(server)
+      .put('/auth/me')
+      .set('x-auth', chewie.token)
+      .send({
+        firstName: 'Chewbacca'
+      })
+    
+    const results = response.body
+    expect(results.ok).toBe(1)
+    expect(results.nModified).toBe(1)
+      
+    const getMe = await request(server)
+      .get('/auth/me')
+      .set('x-auth', chewie.token)
+    
+    const user = getMe.body
+    expect(user.firstName).toBe('Chewbacca')
+    chewie = user
   })
 })
