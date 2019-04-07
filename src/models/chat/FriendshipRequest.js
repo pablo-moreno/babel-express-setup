@@ -26,10 +26,14 @@ const FriendshipRequestSchema = new mongoose.Schema({
     type: String,
     default: '',
     required: false
+  },
+  read: {
+    type: Boolean,
+    default: false
   }
 })
 
-FriendshipRequest.pre('save', (next) => {
+FriendshipRequestSchema.pre('save', (next) => {
   if (this.status === 1) {
     const room = new Room({
       users: [ this.from, this.to, ],
