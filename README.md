@@ -1,4 +1,4 @@
-# babel-express-server
+# Poppy
 
 [![Build Status](https://travis-ci.org/pablo-moreno/babel-express-setup.svg?branch=master)](https://travis-ci.org/pablo-moreno/babel-express-setup)
 
