@@ -1,9 +1,18 @@
 import server from '../../server'
 import request from 'supertest'
 import mongoose from '../../mongoose'
+import { createMocks, destroyMocks } from './mocks'
 
 describe('API calls', () => {
-  afterAll(done => {
+  beforeAll(async () => {
+    const users = await createMocks()
+    console.log('Users created:', users)
+    return users
+  })
+
+  afterAll(async (done) => {
+    const results = await destroyMocks()
+    console.log('Removed items:', results)
     mongoose.disconnect()
     done()
   })
