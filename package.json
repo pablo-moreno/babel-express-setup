@@ -1,5 +1,5 @@
 {
-  "name": "base-express-server",
+  "name": "poppy-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

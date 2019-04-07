@@ -1,0 +1,17 @@
+version: '2'
+services:
+  mongo:
+    image: mongo
+    container_name: mongo_db_tests
+    ports:
+      - 4424:27017
+  
+  server:
+    image: node:10.6.0
+    container_name: node_server
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: bash -c "npm run test"
+    links:
+      - mongo

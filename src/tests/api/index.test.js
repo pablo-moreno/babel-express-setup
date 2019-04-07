@@ -12,9 +12,24 @@ describe('API calls', () => {
         email: 'chewie@mail.com'
       })
     const user = response.body
+
+    expect(response.status).toBe(200)
+    expect(user.username).toBe('chewie')
+    expect(user.email).toBe('chewie@mail.com')
+  })
+
+  test('Login', async () => {
+    const response = await request(server)
+      .post('/auth/login')
+      .send({ 
+        email: 'chewie@mail.com',
+        password: 'gruaaargh',
+      })
+    const user = response.body
     
     expect(response.status).toBe(200)
     expect(user.username).toBe('chewie')
     expect(user.email).toBe('chewie@mail.com')
+    expect(user.token).not.toBe(undefined)
   })
 })
