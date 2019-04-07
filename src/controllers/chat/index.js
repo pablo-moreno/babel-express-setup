@@ -19,7 +19,7 @@ export const acceptFriendshipRequest = async (req, res) => {
   const { id } = req.params
   const request = await FriendshipRequest.find({ _id: id })
   request.status = 1
-  const result = await request.save()
+  await request.save()
   res.send({ ok: true })
 }
 
@@ -27,6 +27,6 @@ export const refuseFriendshipRequest = async (req, res) => {
   const { id } = req.params
   const request = await FriendshipRequest.find({ _id: id })
   request.status = -1
-  const result = await request.save()
+  await request.save()
   res.send({ ok: true })
 }

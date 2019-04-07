@@ -1,4 +1,5 @@
 import mongoose from '../../mongoose'
+import { Room } from '../rooms'
 
 const FriendshipRequestSchema = new mongoose.Schema({
   from: {
@@ -25,6 +26,16 @@ const FriendshipRequestSchema = new mongoose.Schema({
     type: String,
     default: '',
     required: false
+  }
+})
+
+FriendshipRequest.pre('save', (next) => {
+  if (this.status === 1) {
+    const room = new Room({
+      users: [ this.from, this.to, ],
+      group: false
+    })
+    room.save()
   }
 })
 

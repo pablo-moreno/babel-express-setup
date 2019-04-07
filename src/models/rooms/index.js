@@ -1,3 +1,3 @@
-import _Room from './Room'
+import Room from './Room'
 
-export const Room = _Room
+export { Room }

@@ -1,5 +1,5 @@
 import { User } from '../../models/auth'
-import { clean, requestWrapper as rw } from '../../utils'
+import { clean } from '../../utils'
 import Permission from '../../models/auth/Permission'
 import Group from '../../models/auth/Group'
 import { UPLOADS_URL } from '../../config'
@@ -85,5 +85,7 @@ export const uploadAvatar = async (req, res) => {
   const path = `${UPLOADS_URL}/${file.filename}`
   mUser.avatar = path
   const results = await mUser.save()
-  return res.send(results)
+  return res.send({
+    avatar: results.avatar
+  })
 }

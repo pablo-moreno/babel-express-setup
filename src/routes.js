@@ -2,7 +2,6 @@ import { createUser, login, getMe, updateUser, createGroup, searchUsers, uploadA
 import { createRoom, getRooms, deleteRoom, updateRoom, getRoom } from './controllers/rooms'
 import { canDeleteRoom, canUpdateRoom, canSeeRoom } from './permissions/rooms'
 import { createFriendshipRequest, acceptFriendshipRequest, refuseFriendshipRequest } from './controllers/chat'
-import { single } from 'multer'
 
 const validator = route => ['GET', 'POST', 'PUT', 'DELETE'].indexOf(route.method) > -1
 

@@ -7,7 +7,7 @@ import compression from 'compression'
 import multer from 'multer'
 import routes from './routes'
 import { DEBUG, SECRET_KEY, UPLOADS_PATH } from './config'
-import { none, authenticationRequired, checkPermissions, logger } from './middleware'
+import { authenticationRequired, checkPermissions, logger } from './middleware'
 import { errorWrapper } from './utils'
 
 // Create server

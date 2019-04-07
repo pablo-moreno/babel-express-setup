@@ -85,6 +85,9 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
+# SonarQube lint
+.sonarlint/
+
 # Dist
 dist/
 
