@@ -1,7 +1,13 @@
 import server from '../../server'
 import request from 'supertest'
+import mongoose from '../../mongoose'
 
 describe('API calls', () => {
+  afterAll(done => {
+    mongoose.disconnect()
+    done()
+  })
+
   test('Sign up', async () => {
     const response = await request(server)
       .post('/auth/sign-up')
