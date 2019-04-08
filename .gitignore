@@ -94,4 +94,7 @@ dist/
 # Media files
 media/
 
+# SonarQube
+.scannerwork/
+
 # End of https://www.gitignore.io/api/node

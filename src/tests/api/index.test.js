@@ -14,7 +14,7 @@ describe('API calls', () => {
 
   afterAll(async (done) => {
     const results = await destroyMocks()
-    console.log('Removed items:', results)
+    console.log('Removed items:', results.n, results.ok ? 'OK' : 'ERROR')
     mongoose.disconnect()
     done()
   })
@@ -35,6 +35,20 @@ describe('API calls', () => {
     expect(user.email).toBe('chewie@mail.com')
   })
 
+  test('Sign up error', async () => {
+    const response = await request(server)
+      .post('/auth/sign-up')
+      .send({ 
+        username: 'chewie',
+        password: 'aaaahhh',
+        password2: 'gruaaargh',
+        email: 'chewie@mail.com'
+      })
+    const user = response.body
+
+    expect(response.status).toBe(400)
+  })
+
   test('Login', async () => {
     const response = await request(server)
       .post('/auth/login')
@@ -51,6 +65,16 @@ describe('API calls', () => {
     chewie = user
   })
 
+  test('Login error', async () => {
+    const response = await request(server)
+      .post('/auth/login')
+      .send({ 
+        email: 'chewie@mail.com',
+        password: 'aaaaahhhhh',
+      })
+    expect(response.status).toBe(400)
+  })
+
   test('Get Me', async () => {
     const response = await request(server)
       .get('/auth/me')
@@ -62,6 +86,14 @@ describe('API calls', () => {
     expect(user.email).toBe(chewie.email)
     expect(user.token).toBe(chewie.token)
     chewie = user
+  })
+
+  test('Get Me error', async () => {
+    const response = await request(server)
+      .get('/auth/me')
+      .set('x-auth', 'this token doesnt exist')
+    
+    expect(response.status).toBe(401)
   })
 
   test('Update user', async () => {

@@ -7,25 +7,22 @@ export const createMocks = async () => {
     {
       username: 'leia',
       email: 'leia@theresistance.com',
-      password: 'AllIWantIsHope'
+      password: await hashPassword('AllIWantIsHope')
     },
     {
       username: 'luke',
       email: 'luke@theresistance.com',
-      password: 'EveryWordYouSaidIsWrong'
+      password: await hashPassword('EveryWordYouSaidIsWrong'),
     },
     {
       username: 'han',
       email: 'han@theresistance.com',
-      password: 'IKnow'
+      password: await hashPassword('IKnow'),
     },
   ]
 
-  users.forEach(async (user) => {
-    const u = new User({
-      ...user,
-      password: await hashPassword(user.password)
-    })
+  users.forEach(async ({ username, email, password }) => {
+    const u = new User({ username, email, password })
     const result = await u.save()
     console.log('Created user: ', result.username)
     results.push(result)
