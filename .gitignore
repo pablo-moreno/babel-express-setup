@@ -97,4 +97,7 @@ media/
 # SonarQube
 .scannerwork/
 
+# Docs
+docs/
+
 # End of https://www.gitignore.io/api/node
