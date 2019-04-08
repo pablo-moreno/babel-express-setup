@@ -73,12 +73,12 @@ server.post('/auth/login', logger, checkPermissions([]), errorWrapper(login))
  * @apiName Create new user
  * @apiGroup Authentication
  * 
- * @apiSuccess {String}     username          User's username
- * @apiSuccess {String}     password          User's password
- * @apiSuccess {String}     password2         Repeat password
- * @apiSuccess {String}     email             User's email
- * @apiSuccess {String}     firstName         User's first name
- * @apiSuccess {String}     lastName          User's last name
+ * @apiParam   {String}     username          User's username
+ * @apiParam   {String}     password          User's password
+ * @apiParam   {String}     password2         Repeat password
+ * @apiParam   {String}     email             User's email
+ * @apiParam   {String}     firstName         User's first name
+ * @apiParam   {String}     lastName          User's last name
  * 
  * @apiSuccess {String}     id                User's Id
  * @apiSuccess {String}     username          User's username
@@ -88,7 +88,37 @@ server.post('/auth/login', logger, checkPermissions([]), errorWrapper(login))
  * @apiSuccess {String}     lastName          User's last name
  */
 server.post('/auth/sign-up', logger, checkPermissions([]), errorWrapper(createUser))
+
+/**
+ * @api {post} /auth/me Get User data
+ * @apiName Get user info
+ * @apiGroup Authentication
+ * 
+ * @apiHeader  {String}     x-auth            User token
+ * 
+ * @apiSuccess {String}     id                User's Id
+ * @apiSuccess {String}     username          User's username
+ * @apiSuccess {String}     email             User's email
+ * @apiSuccess {String}     token             User's token
+ * @apiSuccess {String}     firstName         User's first name
+ * @apiSuccess {String}     lastName          User's last name
+ */
 server.get('/auth/me', logger, authenticationRequired, checkPermissions([]), errorWrapper(getMe))
+
+/**
+ * @api {put} /auth/me User update
+ * @apiName Update user
+ * @apiGroup Authentication
+ * 
+ * @apiParam   {String}     username          User's username
+ * @apiParam   {String}     email             User's email
+ * @apiParam   {String}     firstName         User's first name
+ * @apiParam   {String}     lastName          User's last name
+ * 
+ * @apiSuccess {Number}     n                 Affected users
+ * @apiSuccess {Number}     nModified         Modified users
+ * @apiSuccess {Boolean}    ok                Updated ok?
+ */
 server.put('/auth/me', logger, authenticationRequired, checkPermissions([]), errorWrapper(updateUser))
 server.post('/auth/me/avatar', logger, authenticationRequired, checkPermissions([]), upload.single('avatar'), errorWrapper(uploadAvatar))
 server.post('/auth/groups/new', logger, authenticationRequired, checkPermissions([]), errorWrapper(createGroup))
@@ -99,6 +129,8 @@ server.post('/auth/groups/new', logger, authenticationRequired, checkPermissions
  * @api {get} /rooms Get User Rooms
  * @apiName Get User Rooms
  * @apiGroup Rooms
+ * 
+ * @apiHeader  {String}     x-auth                  User token
  * 
  * @apiSuccess {String}     _id                     Room ID
  * @apiSuccess {String}     name                    Room name
