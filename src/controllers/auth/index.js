@@ -25,8 +25,6 @@ export const login = async (req, res) => {
   let response = {}
   const user = await User.authenticate(email, password)
   response = user
-  req.session.email = user.email
-  req.session.token = user.token
 
   res.send(response)
 }
