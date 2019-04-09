@@ -6,6 +6,7 @@ import helmet from 'helmet'
 import compression from 'compression'
 import multer from 'multer'
 import connectRedis from 'connect-redis'
+import redisClient from './redis'
 import { DEBUG, SECRET_KEY, UPLOADS_PATH, REDIS_HOST, REDIS_PORT } from './config'
 import { authenticationRequired, checkPermissions, logger } from './middleware'
 import { errorWrapper } from './utils'
@@ -14,7 +15,6 @@ import { getRooms, createRoom, updateRoom } from './controllers/rooms'
 import { canSeeRoom, canUpdateRoom, canDeleteRoom } from './permissions/rooms'
 import { createFriendshipRequest, acceptFriendshipRequest, refuseFriendshipRequest } from './controllers/chat'
 
-const redis = require('redis')
 const redisStore = connectRedis(session)
 
 const server = express()
@@ -25,7 +25,6 @@ server.use(compression())
 
 server.use(express.static('media'))
 
-const redisClient = redis.createClient()
 let sessionConf = {
   store: new redisStore({ host: REDIS_HOST, port: REDIS_PORT, client: redisClient }),
   secret: SECRET_KEY,

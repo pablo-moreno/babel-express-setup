@@ -1,6 +1,7 @@
 import server from '../../server'
 import request from 'supertest'
 import mongoose from '../../mongoose'
+import redisClient from '../../redis'
 import { createMocks, destroyMocks } from './mocks'
 
 describe('API calls', () => {
@@ -16,6 +17,7 @@ describe('API calls', () => {
     const results = await destroyMocks()
     console.log('Removed items:', results.n, results.ok ? 'OK' : 'ERROR')
     mongoose.disconnect()
+    redisClient.disconnect()
     done()
   })
 
