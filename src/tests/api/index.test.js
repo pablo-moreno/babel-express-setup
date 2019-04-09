@@ -17,7 +17,7 @@ describe('API calls', () => {
     const results = await destroyMocks()
     console.log('Removed items:', results.n, results.ok ? 'OK' : 'ERROR')
     mongoose.disconnect()
-    redisClient.disconnect()
+    redisClient.quit()
     done()
   })
 
