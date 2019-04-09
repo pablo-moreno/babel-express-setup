@@ -6,10 +6,12 @@ export const {
   HOST, 
   PORT, 
   DB_URL, 
-  JWT_SECRET, 
+  JWT_SECRET,
+  REDIS_URL,
   SECRET_KEY, 
   UPLOADS_PATH, 
-  UPLOADS_URL
+  UPLOADS_URL,
+  SENTRY_URL,
 } = process.env
 
 export const SALT = parseInt(process.env.SALT)

@@ -5,7 +5,8 @@ import bodyParser from 'body-parser'
 import helmet from 'helmet'
 import compression from 'compression'
 import multer from 'multer'
-import { DEBUG, SECRET_KEY, UPLOADS_PATH } from './config'
+import RedisStore from 'connect-redis'
+import { DEBUG, SECRET_KEY, UPLOADS_PATH, REDIS_URL } from './config'
 import { authenticationRequired, checkPermissions, logger } from './middleware'
 import { errorWrapper } from './utils'
 import { login, createUser, getMe, updateUser, uploadAvatar, createGroup, searchUsers } from './controllers/auth'
@@ -23,9 +24,10 @@ server.use(compression())
 server.use(express.static('media'))
 
 let sessionConf = {
+  // store: new RedisStore({ url: REDIS_URL }),
   secret: SECRET_KEY,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: true
 }
 
 if (DEBUG) {
@@ -48,8 +50,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 server.use(session(sessionConf))
-
-// Auth
 
 /**
  * @api {post} /auth/login User login
@@ -110,6 +110,8 @@ server.get('/auth/me', logger, authenticationRequired, checkPermissions([]), err
  * @apiName Update user
  * @apiGroup Authentication
  * 
+ * @apiHeader  {String}     x-auth                  User token
+ * 
  * @apiParam   {String}     username          User's username
  * @apiParam   {String}     email             User's email
  * @apiParam   {String}     firstName         User's first name
@@ -120,10 +122,32 @@ server.get('/auth/me', logger, authenticationRequired, checkPermissions([]), err
  * @apiSuccess {Boolean}    ok                Updated ok?
  */
 server.put('/auth/me', logger, authenticationRequired, checkPermissions([]), errorWrapper(updateUser))
-server.post('/auth/me/avatar', logger, authenticationRequired, checkPermissions([]), upload.single('avatar'), errorWrapper(uploadAvatar))
-server.post('/auth/groups/new', logger, authenticationRequired, checkPermissions([]), errorWrapper(createGroup))
 
-// Room
+/**
+ * @api {post} /auth/me/avatar Upload user avatar
+ * @apiName Upload user avatar
+ * @apiGroup Authentication
+ * 
+ * @apiHeader  {String}     x-auth            User token
+ * 
+ * @apiParam   {File}       avatar            Image file
+ * 
+ * @apiSuccess {String}     avatar            Image url
+ */
+server.post('/auth/me/avatar', logger, authenticationRequired, checkPermissions([]), upload.single('avatar'), errorWrapper(uploadAvatar))
+
+/**
+ * @api {post} /auth/me/avatar Upload user avatar
+ * @apiName Upload user avatar
+ * @apiGroup Authentication
+ * 
+ * @apiHeader  {String}     x-auth            User token
+ * 
+ * @apiParam   {File}       avatar            Image file
+ * 
+ * @apiSuccess {String}     avatar            Image url
+ */
+server.post('/auth/groups/new', logger, authenticationRequired, checkPermissions([]), errorWrapper(createGroup))
 
 /**
  * @api {get} /rooms Get User Rooms
@@ -148,15 +172,66 @@ server.get('/rooms', logger, authenticationRequired, checkPermissions([]), error
  * @apiName Create new Room
  * @apiGroup Rooms
  * 
+ * @apiHeader  {String}     x-auth                  User token
+ * 
+ * @apiParam   {String}     _id                     Room ID
+ * @apiParam   {String}     name                    Room name
+ * @apiParam   {Boolean}    group                   Is group
+ * @apiParam   {String}     admin                   Admin's user id
+ * @apiParam   {Object[]}   users                   Room users
+ * 
+ * @apiSuccess {String}     _id                     Room ID
+ * @apiSuccess {String}     name                    Room name
+ * @apiSuccess {Boolean}    group                   Is group
+ * @apiSuccess {String}     admin                   Admin's user id
+ * @apiSuccess {Object[]}   users                   Room users
+ * @apiSuccess {String}     users._id               User's Id
+ * @apiSuccess {String}     users.username          User's username
+ * @apiSuccess {String}     users.email             User's email
+ */
+server.post('/rooms', logger, authenticationRequired, checkPermissions([]), errorWrapper(createRoom))
+
+/**
+ * @api {get} /rooms/:id Get Room data
+ * @apiName Get Room data
+ * @apiGroup Rooms
+ * 
+ * @apiHeader  {String}   x-auth                  User token
+ * 
  * @apiParam {String}     name                    Room name
  * @apiParam {Boolean}    group                   Is group
  * @apiParam {String}     admin                   User's Id
  * @apiParam {String[]}   users                   Room users ids
  */
-server.post('/rooms', logger, authenticationRequired, checkPermissions([]), errorWrapper(createRoom))
-server.get('/rooms/:id', logger, authenticationRequired, checkPermissions([canSeeRoom]), errorWrapper(getRooms))
-server.put('/rooms/:id', logger, authenticationRequired, checkPermissions([canUpdateRoom]), errorWrapper(updateRoom))
-server.delete('/rooms/:id', logger, authenticationRequired, checkPermissions([canDeleteRoom]), errorWrapper(updateRoom))
+server.get('/rooms/:id', logger, authenticationRequired, checkPermissions([ canSeeRoom ]), errorWrapper(getRooms))
+
+/**
+ * @api {put} /rooms Update Room
+ * @apiName Update Room
+ * @apiGroup Rooms
+ * 
+ * @apiHeader  {String}     x-auth                  User token
+ * 
+ * @apiParam   {String}     _id                     Room ID
+ * @apiParam   {String}     name                    Room name
+ * @apiParam   {Boolean}    group                   Is group
+ * @apiParam   {String}     admin                   Admin's user id
+ * @apiParam   {String[]}   users                   Room users
+ * 
+ * @apiSuccess {Number}     n                 Affected users
+ * @apiSuccess {Number}     nModified         Modified users
+ * @apiSuccess {Boolean}    ok                Updated ok?
+ */
+server.put('/rooms/:id', logger, authenticationRequired, checkPermissions([ canUpdateRoom ]), errorWrapper(updateRoom))
+
+/**
+ * @api {delete} /rooms/:id Delete Room
+ * @apiName Delete Room
+ * @apiGroup Rooms
+ * 
+ * @apiHeader  {String}     x-auth                  User token
+ */
+server.delete('/rooms/:id', logger, authenticationRequired, checkPermissions([ canDeleteRoom ]), errorWrapper(updateRoom))
 
 // Friendship requests
 server.post('/friendships/new', logger, authenticationRequired, checkPermissions([]), errorWrapper(createFriendshipRequest))

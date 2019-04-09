@@ -2,7 +2,6 @@ version: '2'
 services:
   mongo:
     image: mongo
-    container_name: poppy_server_dev
     volumes:
       - /var/mongo/my_app_db:/data/db
     ports:

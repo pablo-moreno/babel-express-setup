@@ -6,7 +6,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-    command: bash -c "npm i && npm run serve"
+    command: bash -c "npm run build && pm2 start"
     links:
       - mongo
       - redis

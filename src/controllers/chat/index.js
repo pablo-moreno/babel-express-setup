@@ -3,7 +3,7 @@ import { User } from '../../models/auth'
 
 export const createFriendshipRequest = async (req, res) => {
   const { to } = req.body
-  const { _id } = req.user
+  const _id = req.user
   const user = await User.findOne({ _id })
   if (! user) {
     throw new Error('User not found')

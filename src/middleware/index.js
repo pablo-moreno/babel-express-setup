@@ -11,7 +11,7 @@ export const authenticationRequired = async (req, res, next) => {
     if (! user) {
       throw new Error('Invalid authentication credentials')
     }
-    req.user = pick(user, '_id', 'username', 'email', 'token', 'firstName', 'lastName', 'groups'),
+    req.user = pick(user, '_id', 'username', 'email', 'token', 'firstName', 'lastName', 'groups')
     req.permissions = user.getPermissions()
     next()
   }
