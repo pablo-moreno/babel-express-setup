@@ -6,11 +6,12 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-    command: bash -c "npm run build && pm2 start"
+      - ./logs:/root/.pm2/logs
+    command: bash -c "sh runserver.sh"
     links:
       - mongo
       - redis
-    depends:
+    depends_on:
       - mongo
       - redis
     ports:
@@ -26,4 +27,3 @@ services:
 
   redis:
     image: redis
-    

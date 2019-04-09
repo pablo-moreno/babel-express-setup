@@ -4,8 +4,6 @@ node_js:
 
 services:
   - mongodb
-
-before_script:
-  - cp .env.example .env
+  - redis
 
 script: npm run test
