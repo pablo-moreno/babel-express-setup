@@ -2,7 +2,6 @@ import { User } from '../../../models/auth'
 import { hashPassword } from '../../../utils'
 
 export const createMocks = async () => {
-  const results = []
   const users = [
     {
       username: 'leia',
@@ -21,12 +20,12 @@ export const createMocks = async () => {
     },
   ]
 
-  users.forEach(async ({ username, email, password }) => {
-    const u = new User({ username, email, password })
+  const results = []
+  for (let user of users) {
+    const u = new User(user)
     const result = await u.save()
-    console.log('Created user: ', result.username)
     results.push(result)
-  })
+  }
 
   return results
 }

@@ -25,14 +25,21 @@ io.sockets.on('connection', function (socket) {
   })
 
   socket.on('post-message', async function ({ text, user, room }) {
-    console.log('post-message', user.username, text, room)
-    const msg = new Message({ text, user: user.id, room })
-    await msg.save()
+    const mRoom = await Room.findOne({ _id: room })
+    const msg = new Message({ text, user: user.id })
+    const message = await msg.save()
+    mRoom.messages.push(message._id)
+    mRoom.save()
     io.sockets.in(room).emit('new-message', { 
-      text, 
-      user: {
-        id: user.id,
-        username: user.username,
+      message: {
+        text: message.text,
+        creationDate: message.creationDate,
+        user: {
+          id: user.id,
+          username: user.username,
+        },
+        read: message.read,
+        received: message.received,
       },
       room
     })

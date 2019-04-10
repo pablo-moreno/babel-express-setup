@@ -13,6 +13,11 @@ const RoomSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   }],
+  messages: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Messages',
+    required: true
+  }],
   creationDate: {
     type: Date,
     default: () => Date.now()

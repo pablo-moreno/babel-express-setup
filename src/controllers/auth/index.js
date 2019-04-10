@@ -17,7 +17,7 @@ export const createUser = async (req, res) => {
     lastName: user.lastName, 
     token: user.token
   }
-  res.send(response)
+  res.status(201).send(response)
 }
 
 export const login = async (req, res) => {

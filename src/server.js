@@ -13,18 +13,16 @@ import { errorWrapper } from './utils'
 import { login, createUser, getMe, updateUser, uploadAvatar, createGroup, searchUsers } from './controllers/auth'
 import { getRooms, createRoom, updateRoom } from './controllers/rooms'
 import { canSeeRoom, canUpdateRoom, canDeleteRoom } from './permissions/rooms'
-import { createFriendshipRequest, acceptFriendshipRequest, refuseFriendshipRequest } from './controllers/chat'
-
-const redisStore = connectRedis(session)
+import { createFriendshipRequest, acceptFriendshipRequest, rejectFriendshipRequest } from './controllers/chat'
 
 const server = express()
 
 server.use(bodyParser.json())
 server.use(bodyParser.urlencoded({ extended: true }))
 server.use(compression())
-
 server.use(express.static('media'))
 
+const redisStore = connectRedis(session)
 let sessionConf = {
   store: new redisStore({ host: REDIS_HOST, port: REDIS_PORT, client: redisClient }),
   secret: SECRET_KEY,
@@ -39,6 +37,7 @@ if (DEBUG) {
   server.set('trust proxy', 1)
   sessionConf.secure = true
 }
+server.use(session(sessionConf))
 
 const storage = multer.diskStorage({
   destination(req, file, callback) {
@@ -49,9 +48,7 @@ const storage = multer.diskStorage({
     callback(null, `${Date.now()}.${extension}`)
   }
 })
-
 const upload = multer({ storage })
-server.use(session(sessionConf))
 
 /**
  * @api {post} /auth/login User login
@@ -208,17 +205,17 @@ server.post('/rooms', logger, authenticationRequired, checkPermissions([]), erro
 server.get('/rooms/:id', logger, authenticationRequired, checkPermissions([ canSeeRoom ]), errorWrapper(getRooms))
 
 /**
- * @api {put} /rooms Update Room
+ * @api {put} /rooms/:id Update Room
  * @apiName Update Room
  * @apiGroup Rooms
  * 
- * @apiHeader  {String}     x-auth                  User token
+ * @apiHeader  {String}     x-auth            User token
  * 
- * @apiParam   {String}     _id                     Room ID
- * @apiParam   {String}     name                    Room name
- * @apiParam   {Boolean}    group                   Is group
- * @apiParam   {String}     admin                   Admin's user id
- * @apiParam   {String[]}   users                   Room users
+ * @apiParam   {String}     _id               Room ID
+ * @apiParam   {String}     name              Room name
+ * @apiParam   {Boolean}    group             Is group
+ * @apiParam   {String}     admin             Admin's user id
+ * @apiParam   {String[]}   users             Room users
  * 
  * @apiSuccess {Number}     n                 Affected users
  * @apiSuccess {Number}     nModified         Modified users
@@ -231,16 +228,52 @@ server.put('/rooms/:id', logger, authenticationRequired, checkPermissions([ canU
  * @apiName Delete Room
  * @apiGroup Rooms
  * 
- * @apiHeader  {String}     x-auth                  User token
+ * @apiHeader  {String}     x-auth           User token
  */
 server.delete('/rooms/:id', logger, authenticationRequired, checkPermissions([ canDeleteRoom ]), errorWrapper(updateRoom))
 
-// Friendship requests
+/**
+ * @api {post} /friendships/new Create new Friendship Request
+ * @apiName Create Friendship Request
+ * @apiGroup Friendship Requests
+ * 
+ * @apiHeader {String}      x-auth          User token
+ * 
+ * @apiParam  {String}      from            User id
+ * @apiParam  {String}      to              User id
+ */
 server.post('/friendships/new', logger, authenticationRequired, checkPermissions([]), errorWrapper(createFriendshipRequest))
-server.post('/friendships/:id/accept', logger, authenticationRequired, checkPermissions([]), errorWrapper(acceptFriendshipRequest))
-server.post('/friendships/:id/refuse', logger, authenticationRequired, checkPermissions([]), errorWrapper(refuseFriendshipRequest))
 
-// Users
+/**
+ * @api {post} /friendships/:id/accept Accept Friendship Request
+ * @apiName Accept Friendship Request
+ * @apiGroup Friendship Requests
+ * 
+ * @apiHeader {String}      x-auth          User token
+ */
+server.post('/friendships/:id/accept', logger, authenticationRequired, checkPermissions([]), errorWrapper(acceptFriendshipRequest))
+
+/**
+ * @api {post} /friendships/:id/reject Reject Friendship Request
+ * @apiName Reject Friendship Request
+ * @apiGroup Friendship Requests
+ * 
+ * @apiHeader {String}      x-auth          User token
+ */
+server.post('/friendships/:id/reject', logger, authenticationRequired, checkPermissions([]), errorWrapper(rejectFriendshipRequest))
+
+/**
+ * @api {post} /friendships/:id/reject Reject Friendship Request
+ * @apiName Reject Friendship Request
+ * @apiGroup Friendship Requests
+ * 
+ * @apiHeader {String}      x-auth          User token
+ * 
+ * @apiParam {String}       username        Username
+ * 
+ * @apiSuccess {String}     users._id               User's Id
+ * @apiSuccess {String}     users.username          User's username
+ */
 server.get('/users', logger, authenticationRequired, checkPermissions([]), errorWrapper(searchUsers))
 
 export default server

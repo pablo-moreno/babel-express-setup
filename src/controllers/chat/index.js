@@ -18,15 +18,29 @@ export const createFriendshipRequest = async (req, res) => {
 export const acceptFriendshipRequest = async (req, res) => {
   const { id } = req.params
   const request = await FriendshipRequest.find({ _id: id })
-  request.status = 1
-  await request.save()
-  res.send({ ok: true })
+  if (request) {
+    res.status(404).send({
+      status: 404,
+      error: 404
+    })
+  } else {
+    request.status = 1
+    await request.save()
+    res.send({ ok: true })
+  }
 }
 
-export const refuseFriendshipRequest = async (req, res) => {
+export const rejectFriendshipRequest = async (req, res) => {
   const { id } = req.params
   const request = await FriendshipRequest.find({ _id: id })
-  request.status = -1
-  await request.save()
-  res.send({ ok: true })
+  if (request) {
+    res.status(404).send({
+      status: 404,
+      error: 404
+    })
+  } else {
+    request.status = -1
+    await request.save()
+    res.send({ ok: true })
+  }
 }

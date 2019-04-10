@@ -9,7 +9,7 @@ describe('API calls', () => {
 
   beforeAll(async () => {
     const users = await createMocks()
-    console.log('Users created:', users)
+    console.log('Users created: ', users.length)
     return users
   })
 
@@ -32,7 +32,7 @@ describe('API calls', () => {
       })
     const user = response.body
 
-    expect(response.status).toBe(200)
+    expect(response.status).toBe(201)
     expect(user.username).toBe('chewie')
     expect(user.email).toBe('chewie@mail.com')
   })
@@ -51,7 +51,7 @@ describe('API calls', () => {
     expect(response.status).toBe(400)
   })
 
-  test('Login', async () => {
+  test('Chewie Login', async () => {
     const response = await request(server)
       .post('/auth/login')
       .send({ 

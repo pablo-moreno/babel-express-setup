@@ -12,8 +12,8 @@ const isRoomOwner = async (user, _id) => {
 
 export const canSeeRoom = async (user, params) => {
   const { id } = params
-  // return isRoomUser(user, id)
-  return true
+  const canSee = await isRoomUser(user, id)
+  return canSee === true
 }
 
 export const canDeleteRoom = async (user, params) => {

@@ -21,13 +21,17 @@ export const getRoom = async (req, res) => {
   const pop = { path: 'users', select: 'username email' }
   const room = await Room.findOne({ _id: id }).populate(pop)
 
-  res.send(room)
+  if (! room) {
+    res.status(404).send(room)
+  } else {
+    res.send(room)
+  }
 }
 
 export const deleteRoom = async (req, res) => {
   const { id } = req.params
-  const result = await Room.deleteOne({ _id: id })
-  res.send({result})
+  await Room.deleteOne({ _id: id })
+  res.status(204)
 }
 
 export const updateRoom = async (req, res) => {

@@ -13,10 +13,6 @@ const MessageSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  room: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Room',
-  },
   sentDate: {
     type: Date,
     default: () => Date.now()
