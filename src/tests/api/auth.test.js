@@ -1,7 +1,7 @@
 import server from '../../server'
 import request from 'supertest'
 import mongoose from '../../mongoose'
-import redisClient from '../../redis'
+import redisClient from '../../redisClient'
 import { createMocks, destroyMocks } from './mocks'
 
 describe('API calls', () => {
@@ -46,7 +46,6 @@ describe('API calls', () => {
         password2: 'gruaaargh',
         email: 'chewie@mail.com'
       })
-    const user = response.body
 
     expect(response.status).toBe(400)
   })
