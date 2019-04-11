@@ -28,6 +28,21 @@ export const getRoom = async (req, res) => {
   }
 }
 
+export const getRoomMessages = async (req, res) => {
+  const { id } = req.params
+  const page = req.params.page || 1
+  const messages = await Room.find({ _id: id }, { $slice: -50 * page })
+
+  if (! room) {
+    res.status(404).send({
+      status: 404,
+      error: 'Room not found'
+    })
+  } else {
+    res.send(messages)
+  }
+}
+
 export const deleteRoom = async (req, res) => {
   const { id } = req.params
   await Room.deleteOne({ _id: id })

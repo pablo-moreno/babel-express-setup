@@ -2,5 +2,6 @@ module.exports = {
   transform: {
     "^.+\\.jsx?$": "babel-jest"
   },
-  testEnvironment: 'node'
+  testEnvironment: 'node',
+  collectCoverage: true
 }

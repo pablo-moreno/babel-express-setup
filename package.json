@@ -7,7 +7,7 @@
     "build": "babel src -d dist",
     "dev": "nodemon --exec babel-node src/index.js",
     "serve": "npm run build && node dist/index.js",
-    "test": "jest --detectOpenHandles"
+    "test": "jest --coverage"
   },
   "author": "Pablo Moreno",
   "license": "GPL-3.0",
@@ -19,6 +19,7 @@
     "babel-eslint": "^10.0.1",
     "babel-jest": "^24.1.0",
     "cors": "^2.8.5",
+    "coveralls": "^3.0.3",
     "eslint": "^5.15.3",
     "eslint-config-prettier": "^4.1.0",
     "eslint-plugin-prettier": "^3.0.1",
