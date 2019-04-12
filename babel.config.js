@@ -8,5 +8,11 @@ module.exports = {
         },
       },
     ],
-  ]
+  ],
+  env: {
+    debug: {
+      sourceMaps: 'inline',
+      retainLines: true
+    }
+  },
 }

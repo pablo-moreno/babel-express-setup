@@ -100,4 +100,6 @@ media/
 # Docs
 docs/
 
+.vscode/
+
 # End of https://www.gitignore.io/api/node

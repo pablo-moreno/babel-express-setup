@@ -14,8 +14,7 @@ export const authenticationRequired = async (req, res, next) => {
     req.user = pick(user, '_id', 'username', 'email', 'token', 'firstName', 'lastName', 'groups')
     req.permissions = user.getPermissions()
     next()
-  }
-  catch (error) {
+  } catch (error) {
     res.status(401).send({
       status: 401,
       error: error.message
@@ -34,7 +33,7 @@ export const checkPermissions = (permissions) => {
         const result = await permission(user, params)
         results.push(result)
       }
-      const hasPermission = results && results.length === results.filter(i => i).length
+      const hasPermission = results && results.length === results.filter(i => i === true).length
       if (hasPermission) {
         next()
       } else {
