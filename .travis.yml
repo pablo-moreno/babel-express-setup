@@ -6,4 +6,6 @@ services:
   - mongodb
   - redis
 
+cache: npm
+
 script: npm run test

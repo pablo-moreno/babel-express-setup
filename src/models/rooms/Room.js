@@ -33,10 +33,12 @@ const RoomSchema = new mongoose.Schema({
 })
 
 RoomSchema.statics.findByUser = function (user) {
-  return this.find({ users: user.id }).populate({
-    path: 'users', 
-    select: 'username email'
-  })
+  return this.find({ users: user.id })
+    .populate({
+      path: 'users', 
+      select: 'username email'
+    })
+    .select('-messages')
 }
 
 const Room = mongoose.model('Room', RoomSchema)
