@@ -37,7 +37,7 @@ io.sockets.on('connection', function (socket) {
         message: {
           id: message._id,
           text: message.text,
-          creationDate: message.creationDate,
+          creationDate: message.sentDate.valueOf(),
           user: {
             id: user.id,
             username: user.username,
@@ -49,12 +49,12 @@ io.sockets.on('connection', function (socket) {
       })
   })
 
-  socket.on('writing-message', async function({ user, room }) {
-    io.sockets.in(room).emit('user-is-writing', { user, room })
+  socket.on('start-writing', async function(user, room) {
+    io.sockets.in(room).emit('user-is-writing', user, room)
   })
 
-  socket.on('stop-writing', async function({ user, room }) {
-    io.sockets.in(room).emit('user-stopped-writing', { user, room })
+  socket.on('stop-writing', async function(user, room) {
+    io.sockets.in(room).emit('user-stopped-writing',user, room)
   })
 })
 
