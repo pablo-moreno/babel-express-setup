@@ -30,8 +30,13 @@ export const getRoom = async (req, res) => {
 
 export const getRoomMessages = async (req, res) => {
   const { id } = req.params
-  const page = req.params.page || 1
-  const messages = await Room.find({ _id: id }, { $slice: -50 * page })
+  const page = req.query.page || 1
+  const room = await Room.findOne({ _id: id }, {
+    messages: {
+      $slice: [-page * 20, 20]
+    }
+  })
+  .populate({ path: 'messages', select: 'text sentDate user' })
 
   if (! room) {
     res.status(404).send({
@@ -39,6 +44,7 @@ export const getRoomMessages = async (req, res) => {
       error: 'Room not found'
     })
   } else {
+    const messages = room.messages
     res.send(messages)
   }
 }
