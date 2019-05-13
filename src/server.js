@@ -8,19 +8,27 @@ import multer from 'multer'
 import connectRedis from 'connect-redis'
 import redisClient from './redisClient'
 import { DEBUG, SECRET_KEY, UPLOADS_PATH, REDIS_HOST, REDIS_PORT } from './config'
-import { authenticationRequired, checkPermissions, logger } from './middleware'
+import { authenticationRequired, checkPermissions, logger, onError } from './middleware'
 import { errorWrapper } from './utils'
 import { login, createUser, getMe, updateUser, uploadAvatar, createGroup, searchUsers } from './controllers/auth'
-import { getRooms, createRoom, updateRoom } from './controllers/rooms'
+import { getRooms, createRoom, updateRoom, getRoomMessages } from './controllers/rooms'
 import { canSeeRoom, canUpdateRoom, canDeleteRoom } from './permissions/rooms'
 import { createFriendshipRequest, acceptFriendshipRequest, rejectFriendshipRequest } from './controllers/chat'
+import Raven from 'raven'
+import { HOST, PORT, SENTRY_URL } from './config'
 
 const server = express()
+
+if (process.env.NODE_ENV === 'production') {
+  Raven.config(SENTRY_URL).install()
+  server.use(Raven.errorHandler())
+}
 
 server.use(bodyParser.json())
 server.use(bodyParser.urlencoded({ extended: true }))
 server.use(compression())
 server.use(express.static('media'))
+server.use(onError)
 
 const redisStore = connectRedis(session)
 let sessionConf = {
@@ -231,6 +239,8 @@ server.put('/rooms/:id', logger, authenticationRequired, checkPermissions([ canU
  * @apiHeader  {String}     x-auth           User token
  */
 server.delete('/rooms/:id', logger, authenticationRequired, checkPermissions([ canDeleteRoom ]), errorWrapper(updateRoom))
+
+server.get('/rooms/:id/messages', logger, authenticationRequired, checkPermissions([ canSeeRoom ]), errorWrapper(getRoomMessages))
 
 /**
  * @api {post} /friendships/new Create new Friendship Request

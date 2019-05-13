@@ -1,7 +1,7 @@
 import { Room } from '../../models/rooms'
 
 const isRoomUser = async (user, _id) => {
-  const room = await Room.find({ _id })
+  const room = await Room.findOne({ _id })
   return room.users.indexOf(user._id) > -1
 }
 

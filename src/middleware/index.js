@@ -50,3 +50,10 @@ export const logger = (req, res, next) => {
   console.log(`[${req.method}] - ${req.route.path} - ${JSON.stringify(req.body)}`)
   next()
 }
+
+export const onError = (err, req, res, next) => {
+  res.status(500).send({
+    status: 500,
+    error: err.message
+  })
+}
