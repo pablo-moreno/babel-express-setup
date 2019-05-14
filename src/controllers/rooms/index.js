@@ -1,5 +1,7 @@
 import { Room } from '../../models/rooms'
-import { clean } from '../../utils'
+import { Message } from '../../models/chat'
+import { clean, paginate } from '../../utils'
+import { PAGE_SIZE } from '../../config'
 
 export const createRoom = async (req, res) => {
   const { name, users, admin, group } = req.body
@@ -11,8 +13,11 @@ export const createRoom = async (req, res) => {
 
 export const getRooms = async (req, res) => {
   const { _id } = req.user
-  const pop = { path: 'users', select: 'username email' }
-  const rooms = await Room.find({ users: _id }).populate(pop)
+  const rooms = await Room.find({ users: _id })
+    .populate({
+      path: 'users',
+      select: 'username email'
+    })
   res.send(rooms)
 }
 
@@ -31,12 +36,8 @@ export const getRoom = async (req, res) => {
 export const getRoomMessages = async (req, res) => {
   const { id } = req.params
   const page = req.query.page || 1
-  const room = await Room.findOne({ _id: id }, {
-    messages: {
-      $slice: [-page * 20, 20]
-    }
-  })
-  .populate({ path: 'messages', select: 'text sentDate user' })
+  const room = await Room.findOne({ _id: id })
+  
 
   if (! room) {
     res.status(404).send({
@@ -44,7 +45,13 @@ export const getRoomMessages = async (req, res) => {
       error: 'Room not found'
     })
   } else {
-    const messages = room.messages
+    const roomMessages = paginate(room.messages.reverse(), PAGE_SIZE, page)
+    const messages = await Message.find({
+      _id: {
+        $in: roomMessages
+      }
+    })
+
     res.send(messages)
   }
 }

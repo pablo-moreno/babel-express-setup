@@ -5,6 +5,11 @@ export const hashPassword = async password => hash(password, SALT)
 
 export const validatePassword = async (password, hashedPassword) => compare(password, hashedPassword)
 
+export const paginate = (array, size, page) => {
+  if (page <= 0) return []
+  return array.slice((page - 1) * size, page * size);
+}
+
 export const clean = obj => {
   const nObj = {}
   Object.keys(obj).forEach((key) => {

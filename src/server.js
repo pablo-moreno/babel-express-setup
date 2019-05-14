@@ -73,7 +73,7 @@ const upload = multer({ storage })
  * @apiSuccess {String}     firstName         User's first name
  * @apiSuccess {String}     lastName          User's last name
  */
-server.post('/auth/login', logger, checkPermissions([]), errorWrapper(login))
+server.post('/auth/login', logger, checkPermissions([]), login)
 
 /**
  * @api {post} /auth/sign-up User registration
@@ -94,7 +94,7 @@ server.post('/auth/login', logger, checkPermissions([]), errorWrapper(login))
  * @apiSuccess {String}     firstName         User's first name
  * @apiSuccess {String}     lastName          User's last name
  */
-server.post('/auth/sign-up', logger, checkPermissions([]), errorWrapper(createUser))
+server.post('/auth/sign-up', logger, checkPermissions([]), createUser)
 
 /**
  * @api {post} /auth/me Get User data
@@ -110,7 +110,7 @@ server.post('/auth/sign-up', logger, checkPermissions([]), errorWrapper(createUs
  * @apiSuccess {String}     firstName         User's first name
  * @apiSuccess {String}     lastName          User's last name
  */
-server.get('/auth/me', logger, authenticationRequired, checkPermissions([]), errorWrapper(getMe))
+server.get('/auth/me', logger, authenticationRequired, checkPermissions([]), getMe)
 
 /**
  * @api {put} /auth/me User update
@@ -128,7 +128,7 @@ server.get('/auth/me', logger, authenticationRequired, checkPermissions([]), err
  * @apiSuccess {Number}     nModified         Modified users
  * @apiSuccess {Boolean}    ok                Updated ok?
  */
-server.put('/auth/me', logger, authenticationRequired, checkPermissions([]), errorWrapper(updateUser))
+server.put('/auth/me', logger, authenticationRequired, checkPermissions([]), updateUser)
 
 /**
  * @api {post} /auth/me/avatar Upload user avatar
@@ -141,7 +141,7 @@ server.put('/auth/me', logger, authenticationRequired, checkPermissions([]), err
  * 
  * @apiSuccess {String}     avatar            Image url
  */
-server.post('/auth/me/avatar', logger, authenticationRequired, checkPermissions([]), upload.single('avatar'), errorWrapper(uploadAvatar))
+server.post('/auth/me/avatar', logger, authenticationRequired, checkPermissions([]), upload.single('avatar'), uploadAvatar)
 
 /**
  * @api {post} /auth/me/avatar Upload user avatar
@@ -154,7 +154,7 @@ server.post('/auth/me/avatar', logger, authenticationRequired, checkPermissions(
  * 
  * @apiSuccess {String}     avatar            Image url
  */
-server.post('/auth/groups/new', logger, authenticationRequired, checkPermissions([]), errorWrapper(createGroup))
+server.post('/auth/groups/new', logger, authenticationRequired, checkPermissions([]), createGroup)
 
 /**
  * @api {get} /rooms Get User Rooms
@@ -172,7 +172,7 @@ server.post('/auth/groups/new', logger, authenticationRequired, checkPermissions
  * @apiSuccess {String}     users.username          User's username
  * @apiSuccess {String}     users.email             User's email
  */
-server.get('/rooms', logger, authenticationRequired, checkPermissions([]), errorWrapper(getRooms))
+server.get('/rooms', logger, authenticationRequired, checkPermissions([]), getRooms)
 
 /**
  * @api {post} /rooms Create new Room
@@ -196,7 +196,7 @@ server.get('/rooms', logger, authenticationRequired, checkPermissions([]), error
  * @apiSuccess {String}     users.username          User's username
  * @apiSuccess {String}     users.email             User's email
  */
-server.post('/rooms', logger, authenticationRequired, checkPermissions([]), errorWrapper(createRoom))
+server.post('/rooms', logger, authenticationRequired, checkPermissions([]), createRoom)
 
 /**
  * @api {get} /rooms/:id Get Room data
@@ -210,7 +210,7 @@ server.post('/rooms', logger, authenticationRequired, checkPermissions([]), erro
  * @apiParam {String}     admin                   User's Id
  * @apiParam {String[]}   users                   Room users ids
  */
-server.get('/rooms/:id', logger, authenticationRequired, checkPermissions([ canSeeRoom ]), errorWrapper(getRooms))
+server.get('/rooms/:id', logger, authenticationRequired, checkPermissions([ canSeeRoom ]), getRooms)
 
 /**
  * @api {put} /rooms/:id Update Room
@@ -229,7 +229,7 @@ server.get('/rooms/:id', logger, authenticationRequired, checkPermissions([ canS
  * @apiSuccess {Number}     nModified         Modified users
  * @apiSuccess {Boolean}    ok                Updated ok?
  */
-server.put('/rooms/:id', logger, authenticationRequired, checkPermissions([ canUpdateRoom ]), errorWrapper(updateRoom))
+server.put('/rooms/:id', logger, authenticationRequired, checkPermissions([ canUpdateRoom ]), updateRoom)
 
 /**
  * @api {delete} /rooms/:id Delete Room
@@ -238,9 +238,16 @@ server.put('/rooms/:id', logger, authenticationRequired, checkPermissions([ canU
  * 
  * @apiHeader  {String}     x-auth           User token
  */
-server.delete('/rooms/:id', logger, authenticationRequired, checkPermissions([ canDeleteRoom ]), errorWrapper(updateRoom))
+server.delete('/rooms/:id', logger, authenticationRequired, checkPermissions([ canDeleteRoom ]), updateRoom)
 
-server.get('/rooms/:id/messages', logger, authenticationRequired, checkPermissions([ canSeeRoom ]), errorWrapper(getRoomMessages))
+/**
+ * @api {get} /rooms/:id/messages
+ * @apiName Get Room Messages
+ * @apiGroup Rooms
+ * 
+ * @apiHeader  {String}     x-auth           User token
+ */
+server.get('/rooms/:id/messages', logger, authenticationRequired, checkPermissions([ canSeeRoom ]), getRoomMessages)
 
 /**
  * @api {post} /friendships/new Create new Friendship Request
@@ -252,7 +259,7 @@ server.get('/rooms/:id/messages', logger, authenticationRequired, checkPermissio
  * @apiParam  {String}      from            User id
  * @apiParam  {String}      to              User id
  */
-server.post('/friendships/new', logger, authenticationRequired, checkPermissions([]), errorWrapper(createFriendshipRequest))
+server.post('/friendships/new', logger, authenticationRequired, checkPermissions([]), createFriendshipRequest)
 
 /**
  * @api {post} /friendships/:id/accept Accept Friendship Request
@@ -261,7 +268,7 @@ server.post('/friendships/new', logger, authenticationRequired, checkPermissions
  * 
  * @apiHeader {String}      x-auth          User token
  */
-server.post('/friendships/:id/accept', logger, authenticationRequired, checkPermissions([]), errorWrapper(acceptFriendshipRequest))
+server.post('/friendships/:id/accept', logger, authenticationRequired, checkPermissions([]), acceptFriendshipRequest)
 
 /**
  * @api {post} /friendships/:id/reject Reject Friendship Request
@@ -270,7 +277,7 @@ server.post('/friendships/:id/accept', logger, authenticationRequired, checkPerm
  * 
  * @apiHeader {String}      x-auth          User token
  */
-server.post('/friendships/:id/reject', logger, authenticationRequired, checkPermissions([]), errorWrapper(rejectFriendshipRequest))
+server.post('/friendships/:id/reject', logger, authenticationRequired, checkPermissions([]), rejectFriendshipRequest)
 
 /**
  * @api {post} /friendships/:id/reject Reject Friendship Request
@@ -284,6 +291,6 @@ server.post('/friendships/:id/reject', logger, authenticationRequired, checkPerm
  * @apiSuccess {String}     users._id               User's Id
  * @apiSuccess {String}     users.username          User's username
  */
-server.get('/users', logger, authenticationRequired, checkPermissions([]), errorWrapper(searchUsers))
+server.get('/users', logger, authenticationRequired, checkPermissions([]), searchUsers)
 
 export default server

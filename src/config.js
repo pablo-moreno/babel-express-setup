@@ -18,3 +18,4 @@ export const {
 export const SALT = parseInt(process.env.SALT)
 export const DEBUG = process.env.NODE_ENV !== 'production'
 export const EXPIRATION_DAYS = 7
+export const PAGE_SIZE = 20
