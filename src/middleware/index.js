@@ -1,4 +1,5 @@
 import { User } from '../models/auth'
+import { BadRequestException } from '../exceptions'
 import pick from 'lodash/pick'
 
 export const none = (req, res, next) => next()
@@ -9,7 +10,7 @@ export const authenticationRequired = async (req, res, next) => {
   try {
     const user = await User.findByToken(token)
     if (! user) {
-      throw new Error('Invalid authentication credentials')
+      throw new BadRequestException('Invalid authentication credentials')
     }
     req.user = pick(user, '_id', 'username', 'email', 'token', 'firstName', 'lastName', 'groups')
     req.permissions = user.getPermissions()

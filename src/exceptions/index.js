@@ -42,6 +42,8 @@ NotFoundException.prototype.constructor = NotFoundException
 
 export {
   BaseException,
+  BadRequestException,
   ForbiddenException,
   UnauthorizedException,
+  NotFoundException,
 }

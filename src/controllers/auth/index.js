@@ -1,13 +1,14 @@
 import { User } from '../../models/auth'
 import { clean } from '../../utils'
+import { UPLOADS_URL } from '../../config'
+import { BadRequestException } from '../../exceptions'
 import Permission from '../../models/auth/Permission'
 import Group from '../../models/auth/Group'
-import { UPLOADS_URL } from '../../config'
 
 export const createUser = async (req, res) => {
   const { username, password, password2, email, firstName, lastName } = req.body
   let response = {}
-  if (password !== password2) throw new Error('Password mismatch')
+  if (password !== password2) throw new BadRequestException('Password mismatch')
   const user = await User.createUser({ username, password, email, firstName, lastName })
   response = {
     id: user._id,

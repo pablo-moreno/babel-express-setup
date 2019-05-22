@@ -1,9 +1,10 @@
 import jwt from 'jsonwebtoken'
 import mongoose from '../../mongoose'
-import { JWT_SECRET, EXPIRATION_DAYS } from '../../config'
-import { hashPassword, validatePassword } from '../../utils'
 import Group from './Group'
 import Permission from './Permission'
+import { JWT_SECRET, EXPIRATION_DAYS } from '../../config'
+import { hashPassword, validatePassword } from '../../utils'
+import { BadRequestException, NotFoundException } from '../../exceptions'
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -178,11 +179,11 @@ UserSchema.statics.createUser = async function({ username, password, email, firs
 
 UserSchema.statics.authenticate = async function (email, password) {
   const user = await User.findOne({ email })
-  if (! user) throw new Error('User not found')
+  if (! user) throw new NotFoundException('User not found')
   
   const isValid = await validatePassword(password, user.password)
 
-  if (!isValid) throw new Error('Wrong username or password')
+  if (!isValid) throw new BadRequestException('Wrong username or password')
   if (user.token === '') user.generateAuthToken()  
 
   return {
