@@ -21,10 +21,10 @@ export const clean = obj => {
 }
 
 export const errorWrapper = fn => {
-  return async (req, res) => {
-    fn(req, res).catch (error => {
-      res.status(400).send({
-        status: 400,
+  return async (req, res, next) => {
+    fn(req, res, next).catch (error => {
+      res.status(error.statusCode).send({
+        status: error.statusCode,
         error: error.message
       })
     })

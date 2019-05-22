@@ -9,7 +9,7 @@ import connectRedis from 'connect-redis'
 import redisClient from './redisClient'
 import { DEBUG, SECRET_KEY, UPLOADS_PATH, REDIS_HOST, REDIS_PORT } from './config'
 import { authenticationRequired, checkPermissions, logger, onError } from './middleware'
-import { errorWrapper } from './utils'
+import { errorWrapper as e } from './utils'
 import { login, createUser, getMe, updateUser, uploadAvatar, createGroup, searchUsers } from './controllers/auth'
 import { getRooms, createRoom, updateRoom, getRoomMessages } from './controllers/rooms'
 import { canSeeRoom, canUpdateRoom, canDeleteRoom } from './permissions/rooms'
@@ -73,7 +73,7 @@ const upload = multer({ storage })
  * @apiSuccess {String}     firstName         User's first name
  * @apiSuccess {String}     lastName          User's last name
  */
-server.post('/auth/login', logger, checkPermissions([]), login)
+server.post('/auth/login', logger, checkPermissions([]), e(login))
 
 /**
  * @api {post} /auth/sign-up User registration
@@ -94,7 +94,7 @@ server.post('/auth/login', logger, checkPermissions([]), login)
  * @apiSuccess {String}     firstName         User's first name
  * @apiSuccess {String}     lastName          User's last name
  */
-server.post('/auth/sign-up', logger, checkPermissions([]), createUser)
+server.post('/auth/sign-up', logger, checkPermissions([]), e(createUser))
 
 /**
  * @api {post} /auth/me Get User data
@@ -110,7 +110,7 @@ server.post('/auth/sign-up', logger, checkPermissions([]), createUser)
  * @apiSuccess {String}     firstName         User's first name
  * @apiSuccess {String}     lastName          User's last name
  */
-server.get('/auth/me', logger, authenticationRequired, checkPermissions([]), getMe)
+server.get('/auth/me', logger, authenticationRequired, checkPermissions([]), e(getMe))
 
 /**
  * @api {put} /auth/me User update
@@ -128,7 +128,7 @@ server.get('/auth/me', logger, authenticationRequired, checkPermissions([]), get
  * @apiSuccess {Number}     nModified         Modified users
  * @apiSuccess {Boolean}    ok                Updated ok?
  */
-server.put('/auth/me', logger, authenticationRequired, checkPermissions([]), updateUser)
+server.put('/auth/me', logger, authenticationRequired, checkPermissions([]), e(updateUser))
 
 /**
  * @api {post} /auth/me/avatar Upload user avatar
@@ -141,7 +141,7 @@ server.put('/auth/me', logger, authenticationRequired, checkPermissions([]), upd
  * 
  * @apiSuccess {String}     avatar            Image url
  */
-server.post('/auth/me/avatar', logger, authenticationRequired, checkPermissions([]), upload.single('avatar'), uploadAvatar)
+server.post('/auth/me/avatar', logger, authenticationRequired, checkPermissions([]), upload.single('avatar'), e(uploadAvatar))
 
 /**
  * @api {post} /auth/me/avatar Upload user avatar
@@ -154,7 +154,7 @@ server.post('/auth/me/avatar', logger, authenticationRequired, checkPermissions(
  * 
  * @apiSuccess {String}     avatar            Image url
  */
-server.post('/auth/groups/new', logger, authenticationRequired, checkPermissions([]), createGroup)
+server.post('/auth/groups/new', logger, authenticationRequired, checkPermissions([]), e(createGroup))
 
 /**
  * @api {get} /rooms Get User Rooms
@@ -172,7 +172,7 @@ server.post('/auth/groups/new', logger, authenticationRequired, checkPermissions
  * @apiSuccess {String}     users.username          User's username
  * @apiSuccess {String}     users.email             User's email
  */
-server.get('/rooms', logger, authenticationRequired, checkPermissions([]), getRooms)
+server.get('/rooms', logger, authenticationRequired, checkPermissions([]), e(getRooms))
 
 /**
  * @api {post} /rooms Create new Room
@@ -196,7 +196,7 @@ server.get('/rooms', logger, authenticationRequired, checkPermissions([]), getRo
  * @apiSuccess {String}     users.username          User's username
  * @apiSuccess {String}     users.email             User's email
  */
-server.post('/rooms', logger, authenticationRequired, checkPermissions([]), createRoom)
+server.post('/rooms', logger, authenticationRequired, checkPermissions([]), e(createRoom))
 
 /**
  * @api {get} /rooms/:id Get Room data
@@ -210,7 +210,7 @@ server.post('/rooms', logger, authenticationRequired, checkPermissions([]), crea
  * @apiParam {String}     admin                   User's Id
  * @apiParam {String[]}   users                   Room users ids
  */
-server.get('/rooms/:id', logger, authenticationRequired, checkPermissions([ canSeeRoom ]), getRooms)
+server.get('/rooms/:id', logger, authenticationRequired, checkPermissions([ canSeeRoom ]), e(getRooms))
 
 /**
  * @api {put} /rooms/:id Update Room
@@ -229,7 +229,7 @@ server.get('/rooms/:id', logger, authenticationRequired, checkPermissions([ canS
  * @apiSuccess {Number}     nModified         Modified users
  * @apiSuccess {Boolean}    ok                Updated ok?
  */
-server.put('/rooms/:id', logger, authenticationRequired, checkPermissions([ canUpdateRoom ]), updateRoom)
+server.put('/rooms/:id', logger, authenticationRequired, checkPermissions([ canUpdateRoom ]), e(updateRoom))
 
 /**
  * @api {delete} /rooms/:id Delete Room
@@ -238,7 +238,7 @@ server.put('/rooms/:id', logger, authenticationRequired, checkPermissions([ canU
  * 
  * @apiHeader  {String}     x-auth           User token
  */
-server.delete('/rooms/:id', logger, authenticationRequired, checkPermissions([ canDeleteRoom ]), updateRoom)
+server.delete('/rooms/:id', logger, authenticationRequired, checkPermissions([ canDeleteRoom ]), e(updateRoom))
 
 /**
  * @api {get} /rooms/:id/messages
@@ -247,7 +247,7 @@ server.delete('/rooms/:id', logger, authenticationRequired, checkPermissions([ c
  * 
  * @apiHeader  {String}     x-auth           User token
  */
-server.get('/rooms/:id/messages', logger, authenticationRequired, checkPermissions([ canSeeRoom ]), getRoomMessages)
+server.get('/rooms/:id/messages', logger, authenticationRequired, checkPermissions([ canSeeRoom ]), e(getRoomMessages))
 
 /**
  * @api {post} /friendships/new Create new Friendship Request
@@ -259,7 +259,7 @@ server.get('/rooms/:id/messages', logger, authenticationRequired, checkPermissio
  * @apiParam  {String}      from            User id
  * @apiParam  {String}      to              User id
  */
-server.post('/friendships/new', logger, authenticationRequired, checkPermissions([]), createFriendshipRequest)
+server.post('/friendships/new', logger, authenticationRequired, checkPermissions([]), e(createFriendshipRequest))
 
 /**
  * @api {post} /friendships/:id/accept Accept Friendship Request
@@ -268,7 +268,7 @@ server.post('/friendships/new', logger, authenticationRequired, checkPermissions
  * 
  * @apiHeader {String}      x-auth          User token
  */
-server.post('/friendships/:id/accept', logger, authenticationRequired, checkPermissions([]), acceptFriendshipRequest)
+server.post('/friendships/:id/accept', logger, authenticationRequired, checkPermissions([]), e(acceptFriendshipRequest))
 
 /**
  * @api {post} /friendships/:id/reject Reject Friendship Request
@@ -277,7 +277,7 @@ server.post('/friendships/:id/accept', logger, authenticationRequired, checkPerm
  * 
  * @apiHeader {String}      x-auth          User token
  */
-server.post('/friendships/:id/reject', logger, authenticationRequired, checkPermissions([]), rejectFriendshipRequest)
+server.post('/friendships/:id/reject', logger, authenticationRequired, checkPermissions([]), e(rejectFriendshipRequest))
 
 /**
  * @api {post} /friendships/:id/reject Reject Friendship Request
@@ -291,6 +291,6 @@ server.post('/friendships/:id/reject', logger, authenticationRequired, checkPerm
  * @apiSuccess {String}     users._id               User's Id
  * @apiSuccess {String}     users.username          User's username
  */
-server.get('/users', logger, authenticationRequired, checkPermissions([]), searchUsers)
+server.get('/users', logger, authenticationRequired, checkPermissions([]), e(searchUsers))
 
 export default server
