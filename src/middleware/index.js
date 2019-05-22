@@ -4,7 +4,7 @@ import pick from 'lodash/pick'
 export const none = (req, res, next) => next()
 
 export const authenticationRequired = async (req, res, next) => {
-  let token = req.header('x-auth') || req.session.token
+  let token = req.header('x-auth')
   
   try {
     const user = await User.findByToken(token)

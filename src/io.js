@@ -33,7 +33,7 @@ io.sockets.on('connection', function (socket) {
     mRoom.save()
 
     io.sockets.in(room)
-      .emit('new-message', { 
+      .emit('new-message', {
         message: {
           id: message._id,
           text: message.text,

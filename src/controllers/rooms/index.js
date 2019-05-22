@@ -38,7 +38,6 @@ export const getRoomMessages = async (req, res) => {
   const page = req.query.page || 1
   const room = await Room.findOne({ _id: id })
   
-
   if (! room) {
     res.status(404).send({
       status: 404,
@@ -51,8 +50,17 @@ export const getRoomMessages = async (req, res) => {
         $in: roomMessages
       }
     })
+    .populate({path: 'user', select: 'username email'})
 
-    res.send(messages)
+    const result = messages.map(message => ({
+      id: message._id,
+      text: message.text,
+      creationDate: message.sentDate.valueOf(),
+      user: message.user,
+      read: message.read,
+      received: message.received,
+    }))
+    res.send(result)
   }
 }
 
